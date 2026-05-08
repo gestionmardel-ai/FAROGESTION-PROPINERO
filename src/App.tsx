@@ -8,21 +8,22 @@ const LOGO_B64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAACMCAIAAACC
 const PUESTOS   = ["Bacha 1","Bacha 2","Cafetería","Caja","Recepcionista","Encargado Salón","Cocina 1","Cocina 2","Cocina 3","Cocina 4","Cocina 5","Cocina 6","Cocina 7","Cocina 8"];
 const PAGADORES = ["Cristian","Valentina","Daniel"];
 const TURNOS    = ["Mañana","Noche","Evento"];
-const VERSION   = "v1.0";
+const VERSION   = "v1.1";
 const YEAR      = "2026";
 
 const BG     = "#000000";
 const CARD   = "#0d0d0d";
 const CARD2  = "#161616";
-const BORDER = "#222222";
+const BORDER = "#2a2a2a";
 const TEXT   = "#ffffff";
+const BRIGHT = "#f0f0f0";
 const MUTED  = "#666666";
-const BLUE   = "#2563eb";
-const BDIM   = "#2563eb18";
-const RED    = "#dc2626";
+const ACCENT = "#e0e0e0";
 const GREEN  = "#22c55e";
 const GDIM   = "#22c55e15";
+const RED    = "#dc2626";
 const RDIM   = "#dc262615";
+const GOLD   = "#f59e0b";
 
 const todayStr  = () => new Date().toISOString().split("T")[0];
 const uid       = () => Math.random().toString(36).slice(2, 9);
@@ -49,9 +50,9 @@ const patchReg     = (id, dt) => sb(`/propinas_historial?id=eq.${id}`, { method:
 
 const INPUT  = { background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:TEXT, fontFamily:"'Inter',system-ui,sans-serif", fontSize:15, padding:"12px 14px", outline:"none", boxSizing:"border-box", WebkitAppearance:"none", width:"100%" };
 const CARD_S = { background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:"16px", marginBottom:12 };
-const pill   = (a) => ({ flex:1, padding:"10px 4px", borderRadius:10, border:`1px solid ${a?BLUE:BORDER}`, background:a?BDIM:"transparent", color:a?BLUE:MUTED, fontFamily:"'Inter',system-ui,sans-serif", fontSize:13, fontWeight:a?600:400, cursor:"pointer" });
+const pill   = (a) => ({ flex:1, padding:"10px 4px", borderRadius:10, border:`1px solid ${a ? ACCENT : BORDER}`, background:a ? "#2a2a2a" : "transparent", color:a ? BRIGHT : MUTED, fontFamily:"'Inter',system-ui,sans-serif", fontSize:13, fontWeight:a ? 600 : 400, cursor:"pointer" });
 const LABEL  = { fontSize:11, color:MUTED, display:"block", marginBottom:5 };
-const SECTIT = { fontSize:10, color:BLUE, letterSpacing:2.5, textTransform:"uppercase", fontWeight:600, marginBottom:12 };
+const SECTIT = { fontSize:10, color:ACCENT, letterSpacing:2.5, textTransform:"uppercase", fontWeight:600, marginBottom:12 };
 
 export default function App() {
   const [tab,setTab]             = useState("registrar");
@@ -68,6 +69,7 @@ export default function App() {
   const [flash,setFlash]         = useState(false);
   const [nuevoNombre,setNuevoNombre] = useState("");
   const [expandedId,setExpandedId]   = useState(null);
+  const [selectedEmp,setSelectedEmp] = useState(null);
 
   useEffect(() => {
     const l = document.createElement("link");
@@ -83,7 +85,7 @@ export default function App() {
         const [p,h] = await Promise.all([getPersonal(), getHistorial()]);
         setPersonal(Array.isArray(p) ? p : []);
         setHistorial(Array.isArray(h) ? h.map(mapReg) : []);
-      } catch(e) { setError("Error al conectar con Supabase. Verificá que las tablas estén creadas."); }
+      } catch(e) { setError("Error al conectar con Supabase."); }
       setReady(true);
     })();
   }, []);
@@ -95,6 +97,8 @@ export default function App() {
 
   const updDistrib = (i,key,val) => setDistrib(d => d.map((r,idx) => { if(idx!==i) return r; const u={...r,[key]:val}; if(key==="empId"&&!val) u.horas=0; return u; }));
 
+  const togglePill = (val, current, setter) => setter(current === val ? "" : val);
+
   const guardar = async () => {
     if(!fechaPago||!fechaPropina||!turno||!pagadoPor||!montoNum){ alert("Completá todos los campos."); return; }
     const detalles = distrib.filter(r=>r.empId&&r.horas>0).map(r=>({ puesto:r.puesto, empId:r.empId, empNombre:personal.find(p=>p.id===r.empId)?.nombre||"?", horas:r.horas, cobro:ratePH*r.horas, cobrado:false }));
@@ -104,7 +108,7 @@ export default function App() {
       setHistorial([reg,...historial]);
       setFechaPago(todayStr()); setFechaPropina(todayStr()); setTurno(""); setPagadoPor(""); setMonto(""); setDistrib(mkDistrib());
       setFlash(true); setTimeout(()=>{ setFlash(false); setTab("historial"); }, 1300);
-    } catch { alert("Error al guardar. Verificá la conexión."); }
+    } catch { alert("Error al guardar."); }
   };
 
   const toggleCobrado = async (regId,idx) => {
@@ -125,25 +129,31 @@ export default function App() {
   };
 
   const delPersonal = async (id) => {
-    try { await delEmp(id); setPersonal(personal.filter(p=>p.id!==id)); } catch { alert("Error al eliminar."); }
+    try { await delEmp(id); setPersonal(personal.filter(p=>p.id!==id)); setSelectedEmp(null); } catch { alert("Error al eliminar."); }
   };
 
   if(!ready) return (
     <div style={{minHeight:"100vh",background:BG,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
       <img src={LOGO_B64} alt="FaroGestion" style={{width:200,opacity:0.8}}/>
-      <div style={{width:32,height:32,border:`2px solid ${BORDER}`,borderTopColor:BLUE,borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
+      <div style={{width:32,height:32,border:`2px solid ${BORDER}`,borderTopColor:ACCENT,borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
-  return (
-    <div style={{minHeight:"100vh",background:BG,color:TEXT,fontFamily:"'Inter',system-ui,sans-serif",paddingBottom:76,maxWidth:500,margin:"0 auto"}}>
+  const TABS = [
+    {id:"registrar",icon:"✏️",label:"Registrar"},
+    {id:"historial",icon:"📋",label:"Historial"},
+    {id:"empleados",icon:"👤",label:"Empleados"},
+    {id:"personal",icon:"👥",label:"Personal"},
+  ];
 
+  return (
+    <div style={{minHeight:"100vh",background:BG,color:TEXT,fontFamily:"'Inter',system-ui,sans-serif",paddingBottom:80,maxWidth:500,margin:"0 auto"}}>
       <div style={{background:CARD,borderBottom:`1px solid ${BORDER}`,padding:"10px 16px",position:"sticky",top:0,zIndex:10}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <img src={LOGO_B64} alt="FaroGestion" style={{height:36}}/>
           <div style={{textAlign:"right"}}>
-            <div style={{fontSize:15,fontWeight:700,color:TEXT}}>Propinero</div>
+            <div style={{fontSize:15,fontWeight:700,color:BRIGHT}}>Propinero</div>
             <div style={{fontSize:9,color:MUTED}}>DASantini © {YEAR} · {VERSION}</div>
           </div>
         </div>
@@ -151,17 +161,18 @@ export default function App() {
       </div>
 
       <div style={{padding:"14px 14px 0"}}>
-        {tab==="registrar"&&<RegistrarTab personal={personal} distrib={distrib} updDistrib={updDistrib} fechaPago={fechaPago} setFechaPago={setFechaPago} fechaPropina={fechaPropina} setFechaPropina={setFechaPropina} turno={turno} setTurno={setTurno} pagadoPor={pagadoPor} setPagadoPor={setPagadoPor} monto={monto} setMonto={setMonto} cobroRow={cobroRow} montoNum={montoNum} totalHs={totalHs} ratePH={ratePH} guardar={guardar} flash={flash}/>}
+        {tab==="registrar"&&<RegistrarTab personal={personal} distrib={distrib} updDistrib={updDistrib} fechaPago={fechaPago} setFechaPago={setFechaPago} fechaPropina={fechaPropina} setFechaPropina={setFechaPropina} turno={turno} setTurno={setTurno} pagadoPor={pagadoPor} setPagadoPor={setPagadoPor} monto={monto} setMonto={setMonto} cobroRow={cobroRow} montoNum={montoNum} totalHs={totalHs} ratePH={ratePH} guardar={guardar} flash={flash} togglePill={togglePill}/>}
         {tab==="historial"&&<HistorialTab historial={historial} expandedId={expandedId} setExpandedId={setExpandedId} toggleCobrado={toggleCobrado}/>}
+        {tab==="empleados"&&<EmpleadosTab personal={personal} historial={historial} selectedEmp={selectedEmp} setSelectedEmp={setSelectedEmp}/>}
         {tab==="personal"&&<PersonalTab personal={personal} nuevoNombre={nuevoNombre} setNuevoNombre={setNuevoNombre} addPersonal={addPersonal} delPersonal={delPersonal}/>}
       </div>
 
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:500,background:CARD,borderTop:`1px solid ${BORDER}`,display:"flex",zIndex:20}}>
-        {[{id:"registrar",icon:"✏️",label:"Registrar"},{id:"historial",icon:"📋",label:"Historial"},{id:"personal",icon:"👥",label:"Personal"}].map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,background:"none",border:"none",padding:"8px 0 10px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
-            <span style={{fontSize:20}}>{t.icon}</span>
-            <span style={{fontSize:10,color:tab===t.id?BLUE:MUTED,fontWeight:tab===t.id?600:400,fontFamily:"'Inter',system-ui,sans-serif"}}>{t.label}</span>
-            {tab===t.id&&<div style={{width:20,height:2,background:BLUE,borderRadius:1}}/>}
+        {TABS.map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,background:"none",border:"none",padding:"6px 0 8px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+            <span style={{fontSize:18}}>{t.icon}</span>
+            <span style={{fontSize:9,color:tab===t.id?BRIGHT:MUTED,fontWeight:tab===t.id?600:400,fontFamily:"'Inter',system-ui,sans-serif"}}>{t.label}</span>
+            {tab===t.id&&<div style={{width:20,height:2,background:BRIGHT,borderRadius:1}}/>}
           </button>
         ))}
       </div>
@@ -169,7 +180,7 @@ export default function App() {
   );
 }
 
-function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaPropina,setFechaPropina,turno,setTurno,pagadoPor,setPagadoPor,monto,setMonto,cobroRow,montoNum,totalHs,ratePH,guardar,flash}) {
+function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaPropina,setFechaPropina,turno,setTurno,pagadoPor,setPagadoPor,monto,setMonto,cobroRow,montoNum,totalHs,ratePH,guardar,flash,togglePill}) {
   return (
     <div>
       <div style={CARD_S}>
@@ -180,25 +191,25 @@ function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaP
         </div>
         <div style={{marginBottom:12}}>
           <label style={LABEL}>Turno</label>
-          <div style={{display:"flex",gap:8}}>{TURNOS.map(t=><button key={t} onClick={()=>setTurno(t)} style={pill(turno===t)}>{t}</button>)}</div>
+          <div style={{display:"flex",gap:8}}>{TURNOS.map(t=><button key={t} onClick={()=>togglePill(t,turno,setTurno)} style={pill(turno===t)}>{t}</button>)}</div>
         </div>
         <div style={{marginBottom:12}}>
           <label style={LABEL}>Pagado por</label>
-          <div style={{display:"flex",gap:8}}>{PAGADORES.map(p=><button key={p} onClick={()=>setPagadoPor(p)} style={pill(pagadoPor===p)}>{p}</button>)}</div>
+          <div style={{display:"flex",gap:8}}>{PAGADORES.map(p=><button key={p} onClick={()=>togglePill(p,pagadoPor,setPagadoPor)} style={pill(pagadoPor===p)}>{p}</button>)}</div>
         </div>
         <div>
           <label style={LABEL}>Monto de la propina</label>
           <div style={{position:"relative"}}>
-            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:BLUE,fontWeight:700,fontSize:16,pointerEvents:"none"}}>$</span>
+            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:BRIGHT,fontWeight:700,fontSize:16,pointerEvents:"none"}}>$</span>
             <input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={{...INPUT,paddingLeft:28}}/>
           </div>
         </div>
       </div>
 
       {montoNum>0&&totalHs>0&&(
-        <div style={{background:BDIM,border:`1px solid ${BLUE}33`,borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",justifyContent:"space-between"}}>
-          <span style={{fontSize:13,color:MUTED}}>Total horas: <b style={{color:TEXT}}>{totalHs}h</b></span>
-          <span style={{fontSize:13,color:MUTED}}>Valor/hora: <b style={{color:BLUE}}>${ratePH.toFixed(2)}</b></span>
+        <div style={{background:"#111",border:`1px solid ${BORDER}`,borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",justifyContent:"space-between"}}>
+          <span style={{fontSize:13,color:MUTED}}>Total horas: <b style={{color:BRIGHT}}>{totalHs}h</b></span>
+          <span style={{fontSize:13,color:MUTED}}>Valor/hora: <b style={{color:BRIGHT}}>${ratePH.toFixed(2)}</b></span>
         </div>
       )}
 
@@ -212,7 +223,7 @@ function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaP
             <div key={puesto} style={{borderBottom:i<PUESTOS.length-1?`1px solid ${BORDER}`:"none",paddingBottom:12,marginBottom:12}}>
               {puesto==="Cocina 1"&&<div style={{fontSize:9,color:MUTED,letterSpacing:2.5,textTransform:"uppercase",marginBottom:8,paddingTop:4,borderTop:`1px dashed ${BORDER}`}}>— Área de Cocina —</div>}
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                <span style={{fontSize:13,color:BLUE,fontWeight:600}}>{puesto}</span>
+                <span style={{fontSize:13,color:ACCENT,fontWeight:600}}>{puesto}</span>
                 <span style={{fontSize:15,fontWeight:700,color:cobro>0?GREEN:MUTED}}>{fmtN(cobro)}</span>
               </div>
               <select value={row.empId} onChange={e=>updDistrib(i,"empId",e.target.value)} style={{...INPUT,marginBottom:row.empId?8:0}}>
@@ -226,7 +237,7 @@ function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaP
       </div>
 
       {montoNum>0&&totalHs>0&&distrib.some(r=>r.empId&&r.horas>0)&&(
-        <div style={{...CARD_S,borderColor:BLUE+"44"}}>
+        <div style={{...CARD_S,borderColor:"#333"}}>
           <div style={SECTIT}>Resumen</div>
           <div style={{display:"flex",justifyContent:"space-between",paddingBottom:6,borderBottom:`1px solid ${BORDER}`,marginBottom:4}}>
             <span style={{fontSize:11,color:MUTED,fontWeight:600}}>Empleado</span>
@@ -234,18 +245,18 @@ function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaP
           </div>
           {distrib.filter(r=>r.empId&&r.horas>0).map((r,i)=>(
             <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:`1px solid ${BORDER}22`,fontSize:13}}>
-              <div><span style={{color:MUTED,fontSize:11}}>{r.puesto} · </span><span style={{color:TEXT}}>{personal.find(p=>p.id===r.empId)?.nombre}</span><span style={{color:MUTED,fontSize:11}}> ({r.horas}h)</span></div>
+              <div><span style={{color:MUTED,fontSize:11}}>{r.puesto} · </span><span style={{color:BRIGHT}}>{personal.find(p=>p.id===r.empId)?.nombre}</span><span style={{color:MUTED,fontSize:11}}> ({r.horas}h)</span></div>
               <span style={{color:GREEN,fontWeight:600}}>{fmtN(cobroRow(r))}</span>
             </div>
           ))}
           <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:8,borderTop:`1px solid ${BORDER}`}}>
             <span style={{color:MUTED,fontSize:13}}>Total propina</span>
-            <span style={{color:BLUE,fontWeight:700,fontSize:16}}>${montoNum.toFixed(2)}</span>
+            <span style={{color:BRIGHT,fontWeight:700,fontSize:16}}>${montoNum.toFixed(2)}</span>
           </div>
         </div>
       )}
 
-      <button onClick={guardar} style={{width:"100%",padding:"16px",border:"none",borderRadius:14,background:flash?GREEN:BLUE,color:"#fff",fontFamily:"'Inter',system-ui,sans-serif",fontSize:16,fontWeight:700,cursor:"pointer",marginBottom:20,transition:"background 0.4s"}}>
+      <button onClick={guardar} style={{width:"100%",padding:"16px",border:"none",borderRadius:14,background:flash?GREEN:"#ffffff",color:"#000",fontFamily:"'Inter',system-ui,sans-serif",fontSize:16,fontWeight:700,cursor:"pointer",marginBottom:20,transition:"background 0.4s"}}>
         {flash?"✓ ¡Propina guardada!":"Guardar Propina"}
       </button>
     </div>
@@ -262,7 +273,7 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado}) {
   );
   return (
     <div>
-      <div style={{fontSize:10,color:BLUE,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:14}}>
+      <div style={{fontSize:10,color:ACCENT,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:14}}>
         {historial.length} propina{historial.length!==1?"s":""} registrada{historial.length!==1?"s":""}
       </div>
       {historial.map(h=>{
@@ -272,14 +283,14 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado}) {
             <div style={{padding:"14px 16px",cursor:"pointer"}} onClick={()=>setExpandedId(expandedId===h.id?null:h.id)}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                 <div>
-                  <div style={{fontWeight:600,fontSize:15,color:TEXT,marginBottom:3}}>
+                  <div style={{fontWeight:600,fontSize:15,color:BRIGHT,marginBottom:3}}>
                     {fmtDate(h.fechaPropina)}
                     <span style={{marginLeft:8,fontSize:11,color:tc(h.turno),background:tc(h.turno)+"22",padding:"2px 8px",borderRadius:20}}>{h.turno}</span>
                   </div>
-                  <div style={{fontSize:12,color:MUTED}}>Cobró: <b style={{color:TEXT}}>{h.pagadoPor}</b> · Pago: {fmtDate(h.fechaPago)}</div>
+                  <div style={{fontSize:12,color:MUTED}}>Pagó: <b style={{color:BRIGHT}}>{h.pagadoPor}</b> · Fecha pago: {fmtDate(h.fechaPago)}</div>
                 </div>
                 <div style={{textAlign:"right"}}>
-                  <div style={{fontWeight:700,fontSize:20,color:BLUE}}>${Number(h.monto).toFixed(2)}</div>
+                  <div style={{fontWeight:700,fontSize:20,color:BRIGHT}}>${Number(h.monto).toFixed(2)}</div>
                   <div style={{fontSize:11,color:allDone?GREEN:MUTED}}>{allDone?"✓ Todos pagados":`${cobrados}/${total} pagados`}</div>
                 </div>
               </div>
@@ -287,7 +298,7 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado}) {
             </div>
             {expandedId===h.id&&(
               <div style={{borderTop:`1px solid ${BORDER}`,padding:"12px 16px"}}>
-                <div style={{fontSize:10,color:BLUE,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Tocá para marcar como pagado</div>
+                <div style={{fontSize:10,color:ACCENT,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Tocá para marcar como pagado</div>
                 {(h.detalles||[]).map((d,i)=>(
                   <div key={i} onClick={()=>toggleCobrado(h.id,i)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",marginBottom:6,borderRadius:10,background:d.cobrado?GDIM:CARD2,border:`1px solid ${d.cobrado?GREEN+"55":BORDER}`,cursor:"pointer",transition:"all 0.2s"}}>
                     <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -295,7 +306,7 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado}) {
                         {d.cobrado&&<span style={{fontSize:14,color:"#000",fontWeight:700,lineHeight:1}}>✓</span>}
                       </div>
                       <div>
-                        <div style={{fontSize:14,color:d.cobrado?GREEN:TEXT,fontWeight:500}}>{d.empNombre}</div>
+                        <div style={{fontSize:14,color:d.cobrado?GREEN:BRIGHT,fontWeight:500}}>{d.empNombre}</div>
                         <div style={{fontSize:11,color:MUTED}}>{d.puesto} · {d.horas}h</div>
                       </div>
                     </div>
@@ -307,7 +318,7 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado}) {
                 ))}
                 <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:8,borderTop:`1px solid ${BORDER}`}}>
                   <span style={{fontSize:12,color:MUTED}}>Valor por hora</span>
-                  <span style={{fontSize:12,color:BLUE,fontWeight:600}}>${Number(h.ratePH||0).toFixed(2)}</span>
+                  <span style={{fontSize:12,color:BRIGHT,fontWeight:600}}>${Number(h.ratePH||0).toFixed(2)}</span>
                 </div>
               </div>
             )}
@@ -318,16 +329,107 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado}) {
   );
 }
 
+function EmpleadosTab({personal,historial,selectedEmp,setSelectedEmp}) {
+  if(selectedEmp) {
+    const emp = personal.find(p=>p.id===selectedEmp);
+    const registros = historial.filter(h=>h.detalles?.some(d=>d.empId===selectedEmp));
+    const totalCobrado = registros.reduce((sum,h)=>{
+      const det = h.detalles?.find(d=>d.empId===selectedEmp);
+      return sum + (det ? Number(det.cobro) : 0);
+    }, 0);
+    const tc = (t) => t==="Mañana"?"#fbbf24":t==="Noche"?"#818cf8":"#34d399";
+    return (
+      <div>
+        <button onClick={()=>setSelectedEmp(null)} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:10,color:MUTED,padding:"8px 14px",fontFamily:"'Inter',system-ui,sans-serif",fontSize:13,cursor:"pointer",marginBottom:14}}>← Volver</button>
+        <div style={{...CARD_S,borderColor:"#333",marginBottom:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:14}}>
+            <div style={{width:46,height:46,borderRadius:"50%",background:CARD2,border:`2px solid ${ACCENT}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:BRIGHT,fontWeight:700,flexShrink:0}}>{emp?.nombre[0].toUpperCase()}</div>
+            <div>
+              <div style={{fontSize:18,fontWeight:700,color:BRIGHT}}>{emp?.nombre}</div>
+              <div style={{fontSize:12,color:MUTED}}>{registros.length} propina{registros.length!==1?"s":""} cobrada{registros.length!==1?"s":""}</div>
+            </div>
+            <div style={{marginLeft:"auto",textAlign:"right"}}>
+              <div style={{fontSize:11,color:MUTED}}>Total cobrado</div>
+              <div style={{fontSize:20,fontWeight:700,color:GREEN}}>${totalCobrado.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+        {registros.length===0?(
+          <div style={{textAlign:"center",padding:"40px 20px",color:MUTED}}>
+            <div style={{fontSize:36,marginBottom:10}}>📭</div>
+            <div>No hay propinas registradas para este empleado</div>
+          </div>
+        ):registros.map(h=>{
+          const det = h.detalles?.find(d=>d.empId===selectedEmp);
+          return (
+            <div key={h.id} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"14px 16px",marginBottom:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                <div>
+                  <div style={{fontWeight:600,fontSize:14,color:BRIGHT,marginBottom:3}}>
+                    {fmtDate(h.fechaPropina)}
+                    <span style={{marginLeft:8,fontSize:11,color:tc(h.turno),background:tc(h.turno)+"22",padding:"2px 7px",borderRadius:20}}>{h.turno}</span>
+                  </div>
+                  <div style={{fontSize:11,color:MUTED}}>{det?.puesto} · {det?.horas}h · Pagó: {h.pagadoPor}</div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontWeight:700,fontSize:18,color:GREEN}}>${Number(det?.cobro||0).toFixed(2)}</div>
+                  <div style={{fontSize:10,color:det?.cobrado?GREEN:MUTED}}>{det?.cobrado?"✓ Pagado":"Pendiente"}</div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{fontSize:10,color:ACCENT,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:14}}>
+        Seleccioná un empleado
+      </div>
+      {personal.length===0?(
+        <div style={{textAlign:"center",padding:"48px 20px",color:MUTED}}>
+          <div style={{fontSize:40,marginBottom:12}}>👤</div>
+          <div>No hay empleados registrados</div>
+        </div>
+      ):(
+        <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:14,overflow:"hidden"}}>
+          {personal.map((p,i)=>{
+            const cant = historial.filter(h=>h.detalles?.some(d=>d.empId===p.id)).length;
+            const total = historial.reduce((sum,h)=>{ const det=h.detalles?.find(d=>d.empId===p.id); return sum+(det?Number(det.cobro):0); },0);
+            return (
+              <div key={p.id} onClick={()=>setSelectedEmp(p.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none",cursor:"pointer"}}>
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{width:38,height:38,borderRadius:"50%",background:CARD2,border:`1px solid ${ACCENT}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:BRIGHT,fontWeight:700,flexShrink:0}}>{p.nombre[0].toUpperCase()}</div>
+                  <div>
+                    <div style={{fontSize:15,fontWeight:500,color:BRIGHT}}>{p.nombre}</div>
+                    <div style={{fontSize:11,color:MUTED}}>{cant} propina{cant!==1?"s":""}</div>
+                  </div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontSize:15,fontWeight:700,color:GREEN}}>{total>0?`$${total.toFixed(2)}`:"—"}</div>
+                  <div style={{fontSize:10,color:MUTED}}>total cobrado</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PersonalTab({personal,nuevoNombre,setNuevoNombre,addPersonal,delPersonal}) {
   const [confirmId,setConfirmId] = useState(null);
   return (
     <div>
-      <div style={{fontSize:10,color:BLUE,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:14}}>
+      <div style={{fontSize:10,color:ACCENT,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:14}}>
         Base de datos · {personal.length} empleado{personal.length!==1?"s":""}
       </div>
       <div style={{display:"flex",gap:8,marginBottom:16}}>
         <input value={nuevoNombre} onChange={e=>setNuevoNombre(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addPersonal()} placeholder="Nombre del empleado..." style={{...INPUT,flex:1}}/>
-        <button onClick={addPersonal} style={{padding:"12px 20px",background:BLUE,border:"none",borderRadius:10,color:"#fff",fontFamily:"'Inter',system-ui,sans-serif",fontSize:20,fontWeight:700,cursor:"pointer",flexShrink:0}}>+</button>
+        <button onClick={addPersonal} style={{padding:"12px 20px",background:"#ffffff",border:"none",borderRadius:10,color:"#000",fontFamily:"'Inter',system-ui,sans-serif",fontSize:20,fontWeight:700,cursor:"pointer",flexShrink:0}}>+</button>
       </div>
       {personal.length===0?(
         <div style={{textAlign:"center",padding:"48px 20px",color:MUTED}}>
@@ -339,8 +441,8 @@ function PersonalTab({personal,nuevoNombre,setNuevoNombre,addPersonal,delPersona
           {personal.map((p,i)=>(
             <div key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 16px",borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none"}}>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <div style={{width:36,height:36,borderRadius:"50%",background:CARD2,border:`1px solid ${BLUE}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:BLUE,fontWeight:700,flexShrink:0}}>{p.nombre[0].toUpperCase()}</div>
-                <span style={{fontSize:15,fontWeight:500}}>{p.nombre}</span>
+                <div style={{width:36,height:36,borderRadius:"50%",background:CARD2,border:`1px solid ${ACCENT}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:BRIGHT,fontWeight:700,flexShrink:0}}>{p.nombre[0].toUpperCase()}</div>
+                <span style={{fontSize:15,fontWeight:500,color:BRIGHT}}>{p.nombre}</span>
               </div>
               {confirmId===p.id?(
                 <div style={{display:"flex",gap:6}}>
