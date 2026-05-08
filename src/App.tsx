@@ -45,7 +45,7 @@ const LABEL={fontSize:11,color:MUTED,display:"block",marginBottom:5};
 const SECTIT={fontSize:10,color:ACCENT,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:12};
 
 export default function App(){
-  const[usuario,setUsuario]=useState(localStorage.getItem("fg_usuario")||"");
+  const[usuario,setUsuario]=useState("");
   const[pass,setPass]=useState("");
   const[loginError,setLoginError]=useState("");
   const[tab,setTab]=useState("registrar");
@@ -70,7 +70,6 @@ export default function App(){
 
   const login=(u,p)=>{
     if(USUARIOS[u]&&USUARIOS[u]===p){
-      localStorage.setItem("fg_usuario",u);
       setUsuario(u);
       setPass("");
       setLoginError("");
@@ -81,7 +80,6 @@ export default function App(){
   };
 
   const logout=()=>{
-    localStorage.removeItem("fg_usuario");
     setUsuario("");
     setPass("");
   };
