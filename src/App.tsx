@@ -45,9 +45,13 @@ const LABEL={fontSize:11,color:MUTED,display:"block",marginBottom:5};
 const SECTIT={fontSize:10,color:ACCENT,letterSpacing:2.5,textTransform:"uppercase",fontWeight:600,marginBottom:12};
 
 export default function App(){
+  const[usuarioSeleccionado,setUsuarioSeleccionado]=useState("");
+  const[logueado,setLogueado]=useState(false);
+  const[usuarioSeleccionado,setUsuarioSeleccionado]=useState("");
   const[usuario,setUsuario]=useState("");
   const[pass,setPass]=useState("");
   const[loginError,setLoginError]=useState("");
+  const[logueado,setLogueado]=useState(false);
   const[tab,setTab]=useState("registrar");
   const[personal,setPersonal]=useState([]);
   const[historial,setHistorial]=useState([]);
@@ -69,7 +73,10 @@ export default function App(){
   useEffect(()=>{const l=document.createElement("link");l.href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";l.rel="stylesheet";document.head.appendChild(l);},[]);
 
   const login=(u,p)=>{
+    if(!u){alert("Selecciona un usuario.");return;}
+    if(!p){alert("Ingresa contraseña.");return;}
     if(USUARIOS[u]&&USUARIOS[u]===p){
+      setLogueado(true);
       setUsuario(u);
       setPass("");
       setLoginError("");
@@ -80,7 +87,7 @@ export default function App(){
   };
 
   const logout=()=>{
-    setUsuario("");
+    setLogueado(false);
     setPass("");
   };
 
@@ -166,7 +173,7 @@ export default function App(){
 
   const delPersonal=async(id)=>{try{await delEmp(id);setPersonal(personal.filter(p=>p.id!==id));setSelectedEmp(null);}catch{alert("Error al eliminar.");}};
 
-  if(!usuario){
+  if(!logueado){
     return(
       <div style={{minHeight:"100vh",background:BG,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
         <div style={{width:"100%",maxWidth:320}}>
@@ -179,7 +186,7 @@ export default function App(){
             <div style={{fontSize:14,fontWeight:600,color:BRIGHT,marginBottom:16}}>Iniciar sesión</div>
             <div style={{marginBottom:12}}>
               <label style={LABEL}>Usuario</label>
-              <select value={usuario} onChange={e=>setUsuario(e.target.value)} style={INPUT}>
+            <select value={usuarioSeleccionado} onChange={e=>setUsuarioSeleccionado(e.target.value)} style={INPUT}>
                 <option value="">Seleccionar...</option>
                 <option value="cristian">Cristian</option>
                 <option value="valentina">Valentina</option>
@@ -189,9 +196,10 @@ export default function App(){
             <div style={{marginBottom:16}}>
               <label style={LABEL}>Contraseña</label>
               <input type="password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login(usuario,pass)} style={INPUT}/>
+              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login(usuarioSeleccionado,pass)} style={INPUT}/>
             </div>
             {loginError&&<div style={{fontSize:12,color:RED,marginBottom:12,padding:"8px",background:RDIM,borderRadius:8}}>{loginError}</div>}
-            <button onClick={()=>login(usuario,pass)} style={{width:"100%",padding:"12px",background:BRIGHT,border:"none",borderRadius:10,color:"#000",fontFamily:"'Inter',system-ui,sans-serif",fontSize:14,fontWeight:700,cursor:"pointer"}}>
+            <button onClick={()=>login(usuarioSeleccionado,pass)} style={{width:"100%",padding:"12px",background:BRIGHT,border:"none",borderRadius:10,color:"#000",fontFamily:"'Inter',system-ui,sans-serif",fontSize:14,fontWeight:700,cursor:"pointer"}}>
               Entrar
             </button>
           </div>
