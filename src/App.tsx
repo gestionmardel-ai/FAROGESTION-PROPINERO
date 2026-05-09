@@ -223,7 +223,7 @@ export default function App(){
                 <option value="daniel">Daniel</option>
               </select>
             </div>
-            <div style={{marginBottom:12}}>
+            <div style={{marginBottom:16}}>
               <label style={LABEL}>Contraseña</label>
               <input type="password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login(usuarioSel,pass)} style={INPUT}/>
             </div>
