@@ -43,8 +43,8 @@ const delBorrador = (id) => sb(`/propinas_borradores?id=eq.${id}`, {method:"DELE
 const patchReg = (id, dt) => sb(`/propinas_historial?id=eq.${id}`, {method:"PATCH", body:JSON.stringify({detalles:dt})});
 const deleteReg = (id) => sb(`/propinas_historial?id=eq.${id}`, {method:"DELETE", headers:{"Prefer":""}});
 
-const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"16px 20px", outline:"none", width:"100%"};
-const LABEL = {fontSize:11, color:MUTED, marginBottom:8};
+const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"12px 14px", outline:"none", width:"100%"};
+const LABEL = {fontSize:11, color:MUTED, marginBottom:5};
 const SECTIT = {fontSize:10, color:ACCENT, letterSpacing:2, textTransform:"uppercase", fontWeight:600, marginBottom:12};
 
 export default function App(){
@@ -277,7 +277,7 @@ function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, f
     <div>
       <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:16, marginBottom:12}}>
         <div style={SECTIT}>Datos</div>
-        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:12}}>
+        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:12}}>
           <div>
             <label style={LABEL}>Fecha pago</label>
             <input type="date" value={fechaPago} onChange={e=>setFechaPago(e.target.value)} style={INPUT}/>
@@ -464,7 +464,7 @@ function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDe
             </div>
             <div style={{fontSize:18, fontWeight:700, color:GREEN}}>${total.toFixed(2)}</div>
           </div>
-          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:12}}>
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:12}}>
             <div>
               <label style={LABEL}>Desde</label>
               <input type="date" value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} style={INPUT}/>
