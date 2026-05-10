@@ -453,13 +453,13 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado,eliminar
                         {d.cobrado&&<span style={{fontSize:14,color:"#000",fontWeight:700}}>✓</span>}
                       </div>
                       <div>
-                        <div style={{fontSize:14,color:d.cobrado?GREEN:BRIGHT,fontWeight:500}}>{d.empNombre}</div>
+                        <div style={{fontSize:14,color:d.cobrado?GREEN:RED,fontWeight:500}}>{d.empNombre}</div>
                         <div style={{fontSize:11,color:MUTED}}>{d.puesto} · {d.horas}h</div>
                       </div>
                     </div>
                     <div style={{textAlign:"right"}}>
-                      <div style={{color:GREEN,fontWeight:700,fontSize:15}}>${Number(d.cobro).toFixed(2)}</div>
-                      <div style={{fontSize:10,color:d.cobrado?GREEN:MUTED}}>{d.cobrado?"✓":"Pendiente"}</div>
+                      <div style={{color:d.cobrado?GREEN:RED,fontWeight:700,fontSize:15}}>${Number(d.cobro).toFixed(2)}</div>
+                      <div style={{fontSize:10,color:d.cobrado?GREEN:RED}}>{d.cobrado?"Pagado":"Pendiente"}</div>
                     </div>
                   </div>
                 ))}
@@ -547,7 +547,7 @@ function RegistrosTab({personal,historial,selectedEmp,setSelectedEmp}){
             </button>
           </div>
         </div>
-        {registros.length===0?(<div style={{textAlign:"center",padding:"40px 20px",color:MUTED}}>📭 No hay propinas en ese rango</div>):registros.map(h=>{const det=h.detalles?.find(d=>d.empId===selectedEmp);return(<div key={h.id} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"14px 16px",marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{fontWeight:600,fontSize:14,color:BRIGHT}}>{fmtDate(h.fechaPropina)}<span style={{marginLeft:8,fontSize:11,color:tc(h.turno),background:tc(h.turno)+"22",padding:"2px 7px",borderRadius:20}}>{h.turno}</span></div><div style={{fontSize:11,color:MUTED}}>{det?.puesto} · {det?.horas}h · Pagó {h.pagadoPor}</div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:18,color:GREEN}}>${Number(det?.cobro||0).toFixed(2)}</div><div style={{fontSize:10,color:det?.cobrado?GREEN:MUTED}}>{det?.cobrado?"Pagado":"Pendiente"}</div></div></div></div>);})}
+        {registros.length===0?(<div style={{textAlign:"center",padding:"40px 20px",color:MUTED}}>📭 No hay propinas en ese rango</div>):registros.map(h=>{const det=h.detalles?.find(d=>d.empId===selectedEmp);return(<div key={h.id} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"14px 16px",marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{fontWeight:600,fontSize:14,color:BRIGHT}}>{fmtDate(h.fechaPropina)}<span style={{marginLeft:8,fontSize:11,color:tc(h.turno),background:tc(h.turno)+"22",padding:"2px 7px",borderRadius:20}}>{h.turno}</span></div><div style={{fontSize:11,color:MUTED}}>{det?.puesto} · {det?.horas}h · Pagó {h.pagadoPor}</div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:18,color:det?.cobrado?GREEN:RED}}>${Number(det?.cobro||0).toFixed(2)}</div><div style={{fontSize:10,color:det?.cobrado?GREEN:RED}}>{det?.cobrado?"Pagado":"Pendiente"}</div></div></div></div>);})}
       </div>
     );
   }
