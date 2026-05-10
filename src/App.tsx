@@ -14,7 +14,6 @@ const BG="#000",CARD="#0d0d0d",CARD2="#161616",BORDER="#2a2a2a",BRIGHT="#f0f0f0"
 const todayStr = () => new Date().toISOString().split("T")[0];
 const uid = () => Math.random().toString(36).slice(2,9);
 const fmtDate = (d) => { if(!d) return "—"; const [y,m,day] = d.split("-"); return `${day}/${m}/${y}`; };
-const fmtN = (n) => Number(n) > 0 ? `$${Number(n).toFixed(2)}` : "—";
 
 const sb = async(path, options = {}) => {
   const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
@@ -210,7 +209,7 @@ export default function App(){
         <div style={{width:"100%", maxWidth:320}}>
           <div style={{textAlign:"center", marginBottom:40}}>
             <div style={{fontSize:20, fontWeight:700, color:BRIGHT}}>🔐 Propinero</div>
-            <div style={{fontSize:12, color:MUTED, marginTop:4}}>v2.2</div>
+            <div style={{fontSize:12, color:MUTED, marginTop:4}}>v2.3</div>
           </div>
           <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20}}>
             <div style={{fontSize:14, fontWeight:600, color:BRIGHT, marginBottom:20}}>Iniciar sesión</div>
@@ -258,7 +257,13 @@ export default function App(){
       </div>
 
       <div style={{position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:500, background:CARD, borderTop:`1px solid ${BORDER}`, display:"flex", zIndex:20}}>
-        {[{id:"registrar",icon:"✏️",label:"Registrar"},{id:"borradores",icon:"📝",label:"Borradores"},{id:"historial",icon:"📋",label:"Historial"},{id:"registros",icon:"👤",label:"Registros"},{id:"personal",icon:"👥",label:"Personal"}].map(t=>
+        {[
+          {id:"registrar",icon:"✏️",label:"Registrar"},
+          {id:"borradores",icon:"📝",label:"Borradores"},
+          {id:"historial",icon:"📋",label:"Historial"},
+          {id:"registros",icon:"👤",label:"Registros"},
+          {id:"personal",icon:"👥",label:"Personal"}
+        ].map(t=>
           <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1, background:"none", border:"none", padding:"8px 0", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:2}}>
             <span style={{fontSize:18}}>{t.icon}</span>
             <span style={{fontSize:9, color:tab===t.id?BRIGHT:MUTED, fontWeight:tab===t.id?600:400}}>{t.label}</span>
@@ -271,36 +276,354 @@ export default function App(){
 
 function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, fechaPropina, setFechaPropina, turno, setTurno, pagadoPor, setPagadoPor, monto, setMonto, totalHs, ratePH, guardarPropina, guardarBorrador}) {
   const montoNum = parseFloat(monto) || 0;
-  const cobroRow = (r) => r.empId && r.horas > 0 ? (totalHs > 0 && montoNum > 0 ? montoNum/totalHs * r.horas : 0) : 0;
-  return (<div><div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:16}}><div style={SECTIT}>Datos</div><div style={{marginBottom:16}}><label style={LABEL}>Fecha pago</label><input type="date" value={fechaPago} onChange={e=>setFechaPago(e.target.value)} style={INPUT}/></div><div style={{marginBottom:16}}><label style={LABEL}>Fecha propina</label><input type="date" value={fechaPropina} onChange={e=>setFechaPropina(e.target.value)} style={INPUT}/></div><div style={{marginBottom:16}}><label style={LABEL}>Turno</label><div style={{display:"flex", gap:10}}>{TURNOS.map(t=><button key={t} onClick={()=>setTurno(turno===t?"":t)} style={{flex:1, padding:"12px 6px", borderRadius:10, border:`1px solid ${turno===t?ACCENT:BORDER}`, background:turno===t?"#2a2a2a":"transparent", color:turno===t?BRIGHT:MUTED, fontWeight:turno===t?600:400, cursor:"pointer"}}>{t}</button>)}</div></div><div style={{marginBottom:16}}><label style={LABEL}>Pagado por</label><div style={{display:"flex", gap:10}}>{PAGADORES.map(p=><button key={p} onClick={()=>setPagadoPor(pagadoPor===p?"":p)} style={{flex:1, padding:"12px 6px", borderRadius:10, border:`1px solid ${pagadoPor===p?ACCENT:BORDER}`, background:pagadoPor===p?"#2a2a2a":"transparent", color:pagadoPor===p?BRIGHT:MUTED, fontWeight:pagadoPor===p?600:400, cursor:"pointer"}}>{p}</button>)}</div></div><div><label style={LABEL}>Monto</label><input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={INPUT}/></div></div><div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:16}}><div style={SECTIT}>Personal</div>{PUESTOS.map((p,i)=><div key={p} style={{borderBottom:i<PUESTOS.length-1?`1px solid ${BORDER}`:"none", paddingBottom:16, marginBottom:16}}><label style={LABEL}>{p}</label><select value={distrib[i].empId} onChange={e=>updDistrib(i,"empId",e.target.value)} style={INPUT}><option value="">-- Sin asignar --</option>{personal.map(per=><option key={per.id} value={per.id}>{per.nombre}</option>)}</select>{distrib[i].empId && <div style={{display:"flex", gap:8, marginTop:10}}>{[4,6,8].map(h=><button key={h} onClick={()=>updDistrib(i,"horas",h)} style={{flex:1, padding:"10px 6px", borderRadius:8, border:`1px solid ${distrib[i].horas===h?ACCENT:BORDER}`, background:distrib[i].horas===h?"#2a2a2a":"transparent", color:BRIGHT, cursor:"pointer", fontWeight:distrib[i].horas===h?600:400}}>{h}h</button>)}</div>}</div>)}</div><div style={{display:"flex", gap:10, marginBottom:20}}><button onClick={guardarBorrador} style={{flex:1, padding:16, background:"#444", border:"none", borderRadius:14, color:BRIGHT, fontWeight:700, cursor:"pointer", fontSize:15}}>📝 Borrador</button><button onClick={guardarPropina} disabled={!montoNum} style={{flex:1, padding:16, background:montoNum?"#fff":"#555", border:"none", borderRadius:14, color:montoNum?"#000":MUTED, fontWeight:700, cursor:montoNum?"pointer":"not-allowed", opacity:montoNum?1:0.5, fontSize:15}}>💾 Propina</button></div></div>);
+  
+  return (
+    <div>
+      <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:16}}>
+        <div style={SECTIT}>Datos</div>
+        <div style={{marginBottom:16}}>
+          <label style={LABEL}>Fecha pago</label>
+          <input type="date" value={fechaPago} onChange={e=>setFechaPago(e.target.value)} style={INPUT}/>
+        </div>
+        <div style={{marginBottom:16}}>
+          <label style={LABEL}>Fecha propina</label>
+          <input type="date" value={fechaPropina} onChange={e=>setFechaPropina(e.target.value)} style={INPUT}/>
+        </div>
+        <div style={{marginBottom:16}}>
+          <label style={LABEL}>Turno</label>
+          <div style={{display:"flex", gap:10}}>
+            {TURNOS.map(t=>
+              <button key={t} onClick={()=>setTurno(turno===t?"":t)} style={{flex:1, padding:"12px 6px", borderRadius:10, border:`1px solid ${turno===t?ACCENT:BORDER}`, background:turno===t?"#2a2a2a":"transparent", color:turno===t?BRIGHT:MUTED, fontWeight:turno===t?600:400, cursor:"pointer"}}>
+                {t}
+              </button>
+            )}
+          </div>
+        </div>
+        <div style={{marginBottom:16}}>
+          <label style={LABEL}>Pagado por</label>
+          <div style={{display:"flex", gap:10}}>
+            {PAGADORES.map(p=>
+              <button key={p} onClick={()=>setPagadoPor(pagadoPor===p?"":p)} style={{flex:1, padding:"12px 6px", borderRadius:10, border:`1px solid ${pagadoPor===p?ACCENT:BORDER}`, background:pagadoPor===p?"#2a2a2a":"transparent", color:pagadoPor===p?BRIGHT:MUTED, fontWeight:pagadoPor===p?600:400, cursor:"pointer"}}>
+                {p}
+              </button>
+            )}
+          </div>
+        </div>
+        <div>
+          <label style={LABEL}>Monto</label>
+          <input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={INPUT}/>
+        </div>
+      </div>
+      <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:16}}>
+        <div style={SECTIT}>Personal</div>
+        {PUESTOS.map((p,i)=>
+          <div key={p} style={{borderBottom:i<PUESTOS.length-1?`1px solid ${BORDER}`:"none", paddingBottom:16, marginBottom:16}}>
+            <label style={LABEL}>{p}</label>
+            <select value={distrib[i].empId} onChange={e=>updDistrib(i,"empId",e.target.value)} style={INPUT}>
+              <option value="">-- Sin asignar --</option>
+              {personal.map(per=><option key={per.id} value={per.id}>{per.nombre}</option>)}
+            </select>
+            {distrib[i].empId && (
+              <div style={{display:"flex", gap:8, marginTop:10}}>
+                {[4,6,8].map(h=>
+                  <button key={h} onClick={()=>updDistrib(i,"horas",h)} style={{flex:1, padding:"10px 6px", borderRadius:8, border:`1px solid ${distrib[i].horas===h?ACCENT:BORDER}`, background:distrib[i].horas===h?"#2a2a2a":"transparent", color:BRIGHT, cursor:"pointer", fontWeight:distrib[i].horas===h?600:400}}>
+                    {h}h
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div style={{display:"flex", gap:10, marginBottom:20}}>
+        <button onClick={guardarBorrador} style={{flex:1, padding:16, background:"#444", border:"none", borderRadius:14, color:BRIGHT, fontWeight:700, cursor:"pointer", fontSize:15}}>
+          📝 Borrador
+        </button>
+        <button onClick={guardarPropina} disabled={!montoNum} style={{flex:1, padding:16, background:montoNum?"#fff":"#555", border:"none", borderRadius:14, color:montoNum?"#000":MUTED, fontWeight:700, cursor:montoNum?"pointer":"not-allowed", opacity:montoNum?1:0.5, fontSize:15}}>
+          💾 Propina
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function TabBorradores({borradores, personal, delBorrador, convertirBorrador, convertMode, setConvertMode}) {
   const [monto, setMonto] = useState("");
-  return (<div>{borradores.length === 0 ? (<div style={{textAlign:"center", padding:"64px 20px", color:MUTED}}>📝 Sin borradores</div>) : (borradores.map(b=><div key={b.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:14}}><div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14}}><div><div style={{fontWeight:600, fontSize:15, color:BRIGHT}}>{fmtDate(b.fechaPropina)}</div><div style={{fontSize:11, color:MUTED, marginTop:4}}>{b.turno} · {b.pagadoPor}</div></div><button onClick={()=>delBorrador(b.id)} style={{background:"#dc262615", border:`1px solid ${RED}44`, borderRadius:8, color:RED, padding:"8px 14px", fontSize:11, cursor:"pointer"}}>Eliminar</button></div>{convertMode === b.id ? (<div style={{background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, padding:14}}><label style={LABEL}>Monto total</label><div style={{display:"flex", gap:10}}><input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={{...INPUT, marginBottom:0, flex:1}}/><button onClick={()=>{convertirBorrador(b,monto); setMonto(""); setConvertMode(null);}} style={{padding:"16px 20px", background:GREEN, border:"none", borderRadius:10, color:"#000", fontWeight:700, cursor:"pointer", fontSize:14}}>Convertir</button></div></div>) : (<button onClick={()=>setConvertMode(b.id)} style={{width:"100%", padding:12, background:GREEN+"33", border:`1px solid ${GREEN}44`, borderRadius:10, color:GREEN, fontWeight:600, cursor:"pointer", marginTop:12, fontSize:14}}>→ Convertir</button>)}</div>))}</div>);
+  
+  return (
+    <div>
+      {borradores.length === 0 ? (
+        <div style={{textAlign:"center", padding:"64px 20px", color:MUTED}}>📝 Sin borradores</div>
+      ) : (
+        borradores.map(b=>
+          <div key={b.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:14}}>
+            <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14}}>
+              <div>
+                <div style={{fontWeight:600, fontSize:15, color:BRIGHT}}>{fmtDate(b.fechaPropina)}</div>
+                <div style={{fontSize:11, color:MUTED, marginTop:4}}>{b.turno} · {b.pagadoPor}</div>
+              </div>
+              <button onClick={()=>delBorrador(b.id)} style={{background:"#dc262615", border:`1px solid ${RED}44`, borderRadius:8, color:RED, padding:"8px 14px", fontSize:11, cursor:"pointer"}}>
+                Eliminar
+              </button>
+            </div>
+            {convertMode === b.id ? (
+              <div style={{background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, padding:14}}>
+                <label style={LABEL}>Monto total</label>
+                <div style={{display:"flex", gap:10}}>
+                  <input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={{...INPUT, marginBottom:0, flex:1}}/>
+                  <button onClick={()=>{convertirBorrador(b,monto); setMonto(""); setConvertMode(null);}} style={{padding:"16px 20px", background:GREEN, border:"none", borderRadius:10, color:"#000", fontWeight:700, cursor:"pointer", fontSize:14}}>
+                    Convertir
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={()=>setConvertMode(b.id)} style={{width:"100%", padding:12, background:GREEN+"33", border:`1px solid ${GREEN}44`, borderRadius:10, color:GREEN, fontWeight:600, cursor:"pointer", marginTop:12, fontSize:14}}>
+                → Convertir
+              </button>
+            )}
+          </div>
+        )
+      )}
+    </div>
+  );
 }
 
 function TabHistorial({historial, expandedId, setExpandedId, toggleCobrado, deleteReg}) {
   const [confirmDel, setConfirmDel] = useState(null);
   const tc = (t) => t==="Mañana"?"#fbbf24":t==="Noche"?"#818cf8":"#34d399";
-  return (<div>{historial.length === 0 ? (<div style={{textAlign:"center", padding:"64px 20px", color:MUTED}}>📋 Sin registros</div>) : (historial.map(h=>{const cobrados=h.detalles?.filter(d=>d.cobrado).length||0;const total=h.detalles?.length||0;return (<div key={h.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, marginBottom:12, overflow:"hidden"}}><div style={{padding:"16px", cursor:"pointer"}} onClick={()=>setExpandedId(expandedId===h.id?null:h.id)}><div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start"}}><div><div style={{fontWeight:600, fontSize:15, color:BRIGHT}}>{fmtDate(h.fechaPropina)} <span style={{fontSize:11, color:tc(h.turno), background:tc(h.turno)+"22", padding:"3px 10px", borderRadius:20}}>{h.turno}</span></div><div style={{fontSize:12, color:MUTED, marginTop:4}}>Pagó: {h.pagadoPor}</div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700, fontSize:20, color:BRIGHT}}>${Number(h.monto).toFixed(2)}</div><div style={{fontSize:11, color:MUTED}}>{cobrados}/{total}</div></div></div></div>{expandedId === h.id && (<div style={{borderTop:`1px solid ${BORDER}`, padding:"16px"}}>{(h.detalles||[]).map((d,i)=>(<div key={i} onClick={()=>toggleCobrado(h.id,i)} style={{display:"flex", justifyContent:"space-between", padding:"12px 14px", marginBottom:8, borderRadius:10, background:d.cobrado?"#22c55e15":CARD2, cursor:"pointer"}}><div><div style={{fontSize:14, color:d.cobrado?GREEN:BRIGHT, fontWeight:500}}>{d.empNombre}</div><div style={{fontSize:11, color:MUTED}}>{d.puesto} · {d.horas}h</div></div><div style={{textAlign:"right"}}><div style={{color:GREEN, fontWeight:700}}>${Number(d.cobro).toFixed(2)}</div><div style={{fontSize:10, color:d.cobrado?GREEN:MUTED}}>{d.cobrado?"Pagada":"Pendiente"}</div></div></div>))}<div style={{marginTop:14, paddingTop:12, borderTop:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center"}}><span style={{fontSize:12, color:MUTED}}>${Number(h.ratePH||0).toFixed(2)}/h</span>{confirmDel===h.id ? (<div style={{display:"flex", gap:6}}><button onClick={()=>{deleteReg(h.id); setConfirmDel(null);}} style={{padding:"7px 12px", background:"#dc262615", border:`1px solid ${RED}`, borderRadius:8, color:RED, fontSize:12, cursor:"pointer"}}>Sí, eliminar</button><button onClick={()=>setConfirmDel(null)} style={{padding:"7px 10px", background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:MUTED, fontSize:12, cursor:"pointer"}}>No</button></div>) : (<button onClick={()=>setConfirmDel(h.id)} style={{padding:"7px 14px", background:"#dc262615", border:`1px solid ${RED}44`, borderRadius:8, color:RED, fontSize:12, cursor:"pointer"}}>Eliminar</button>)}</div></div>)}</div>);}))} </div>);
+  
+  return (
+    <div>
+      {historial.length === 0 ? (
+        <div style={{textAlign:"center", padding:"64px 20px", color:MUTED}}>📋 Sin registros</div>
+      ) : (
+        historial.map(h=>{
+          const cobrados = h.detalles?.filter(d=>d.cobrado).length || 0;
+          const total = h.detalles?.length || 0;
+          return (
+            <div key={h.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, marginBottom:12, overflow:"hidden"}}>
+              <div style={{padding:"16px", cursor:"pointer"}} onClick={()=>setExpandedId(expandedId===h.id?null:h.id)}>
+                <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start"}}>
+                  <div>
+                    <div style={{fontWeight:600, fontSize:15, color:BRIGHT}}>
+                      {fmtDate(h.fechaPropina)} <span style={{fontSize:11, color:tc(h.turno), background:tc(h.turno)+"22", padding:"3px 10px", borderRadius:20}}>{h.turno}</span>
+                    </div>
+                    <div style={{fontSize:12, color:MUTED, marginTop:4}}>Pagó: {h.pagadoPor}</div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontWeight:700, fontSize:20, color:BRIGHT}}>${Number(h.monto).toFixed(2)}</div>
+                    <div style={{fontSize:11, color:MUTED}}>{cobrados}/{total}</div>
+                  </div>
+                </div>
+              </div>
+              {expandedId === h.id && (
+                <div style={{borderTop:`1px solid ${BORDER}`, padding:"16px"}}>
+                  {(h.detalles||[]).map((d,i)=>
+                    <div key={i} onClick={()=>toggleCobrado(h.id,i)} style={{display:"flex", justifyContent:"space-between", padding:"12px 14px", marginBottom:8, borderRadius:10, background:d.cobrado?"#22c55e15":CARD2, cursor:"pointer"}}>
+                      <div>
+                        <div style={{fontSize:14, color:d.cobrado?GREEN:BRIGHT, fontWeight:500}}>{d.empNombre}</div>
+                        <div style={{fontSize:11, color:MUTED}}>{d.puesto} · {d.horas}h</div>
+                      </div>
+                      <div style={{textAlign:"right"}}>
+                        <div style={{color:GREEN, fontWeight:700}}>${Number(d.cobro).toFixed(2)}</div>
+                        <div style={{fontSize:10, color:d.cobrado?GREEN:MUTED}}>{d.cobrado?"Pagada":"Pendiente"}</div>
+                      </div>
+                    </div>
+                  )}
+                  <div style={{marginTop:14, paddingTop:12, borderTop:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+                    <span style={{fontSize:12, color:MUTED}}>${Number(h.ratePH||0).toFixed(2)}/h</span>
+                    {confirmDel===h.id ? (
+                      <div style={{display:"flex", gap:6}}>
+                        <button onClick={()=>{deleteReg(h.id); setConfirmDel(null);}} style={{padding:"7px 12px", background:"#dc262615", border:`1px solid ${RED}`, borderRadius:8, color:RED, fontSize:12, cursor:"pointer"}}>
+                          Sí, eliminar
+                        </button>
+                        <button onClick={()=>setConfirmDel(null)} style={{padding:"7px 10px", background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:MUTED, fontSize:12, cursor:"pointer"}}>
+                          No
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={()=>setConfirmDel(h.id)} style={{padding:"7px 14px", background:"#dc262615", border:`1px solid ${RED}44`, borderRadius:8, color:RED, fontSize:12, cursor:"pointer"}}>
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
 }
 
 function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDesde, setFechaDesde, fechaHasta, setFechaHasta}) {
   const tc = (t) => t==="Mañana"?"#fbbf24":t==="Noche"?"#818cf8":"#34d399";
+  
   if(selectedEmp) {
     const emp = personal.find(p=>p.id===selectedEmp);
     let registros = historial.filter(h=>h.detalles?.some(d=>d.empId===selectedEmp));
     if(fechaDesde) registros = registros.filter(h=>h.fechaPropina>=fechaDesde);
     if(fechaHasta) registros = registros.filter(h=>h.fechaPropina<=fechaHasta);
-    const total = registros.reduce((sum,h)=>{const det=h.detalles?.find(d=>d.empId===selectedEmp); return sum+(det?Number(det.cobro):0);}, 0);
-    const enviarWA = () => {const msg = `👤 ${emp?.nombre}\n${registros.map(h=>{const d=h.detalles?.find(x=>x.empId===selectedEmp); return d?`📅 ${fmtDate(h.fechaPropina)} - $${Number(d.cobro).toFixed(2)} ${d.cobrado?"Pagada":"Pendiente"}`:""}).filter(Boolean).join("\n")}\n💵 Total: $${total.toFixed(2)}`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");};
-    return (<div><button onClick={()=>setSelectedEmp(null)} style={{background:"none", border:`1px solid ${BORDER}`, borderRadius:10, color:MUTED, padding:"10px 14px", fontSize:13, cursor:"pointer", marginBottom:16}}>← Volver</button><div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:18}}><div style={{display:"flex", alignItems:"center", gap:14, marginBottom:16}}><div style={{width:44, height:44, borderRadius:"50%", background:CARD2, border:`2px solid ${ACCENT}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:BRIGHT, fontWeight:700}}>{emp?.nombre[0].toUpperCase()}</div><div style={{flex:1}}><div style={{fontSize:16, fontWeight:700, color:BRIGHT}}>{emp?.nombre}</div><div style={{fontSize:12, color:MUTED}}>{registros.length} propinas</div></div><div style={{fontSize:18, fontWeight:700, color:GREEN}}>${total.toFixed(2)}</div></div><div style={{marginBottom:16}}><label style={LABEL}>Desde</label><input type="date" value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} style={INPUT}/></div><div style={{marginBottom:16}}><label style={LABEL}>Hasta</label><input type="date" value={fechaHasta} onChange={e=>setFechaHasta(e.target.value)} style={INPUT}/></div><button onClick={enviarWA} disabled={registros.length===0} style={{width:"100%", padding:14, background:registros.length>0?"#25d366":"#555", border:"none", borderRadius:10, color:"#fff", fontWeight:600, cursor:registros.length>0?"pointer":"not-allowed", opacity:registros.length>0?1:0.5, fontSize:15}}>📲 Enviar WhatsApp</button></div>{registros.length === 0 ? (<div style={{textAlign:"center", padding:"40px 20px", color:MUTED}}>Sin registros en este período</div>) : (registros.map(h=>{const d=h.detalles?.find(x=>x.empId===selectedEmp);return (<div key={h.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:"15px 16px", marginBottom:10}}><div style={{display:"flex", justifyContent:"space-between"}}><div><div style={{fontWeight:600, fontSize:14, color:BRIGHT}}>{fmtDate(h.fechaPropina)} <span style={{fontSize:11, color:tc(h.turno), background:tc(h.turno)+"22", padding:"2px 7px", borderRadius:20}}>{h.turno}</span></div><div style={{fontSize:11, color:MUTED, marginTop:4}}>{d?.puesto} · {d?.horas}h</div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700, fontSize:16, color:GREEN}}>${Number(d?.cobro||0).toFixed(2)}</div><div style={{fontSize:10, color:d?.cobrado?GREEN:MUTED}}>{d?.cobrado?"Pagada ✓":"Pendiente ⏳"}</div></div></div></div>);}))}  </div>);
+    const total = registros.reduce((sum,h)=>{
+      const det = h.detalles?.find(d=>d.empId===selectedEmp);
+      return sum + (det ? Number(det.cobro) : 0);
+    }, 0);
+    
+    const enviarWA = () => {
+      const msg = `👤 ${emp?.nombre}\n${registros.map(h=>{
+        const d = h.detalles?.find(x=>x.empId===selectedEmp);
+        return d ? `📅 ${fmtDate(h.fechaPropina)} - $${Number(d.cobro).toFixed(2)} ${d.cobrado?"Pagada":"Pendiente"}` : "";
+      }).filter(Boolean).join("\n")}\n💵 Total: $${total.toFixed(2)}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+    };
+
+    return (
+      <div>
+        <button onClick={()=>setSelectedEmp(null)} style={{background:"none", border:`1px solid ${BORDER}`, borderRadius:10, color:MUTED, padding:"10px 14px", fontSize:13, cursor:"pointer", marginBottom:16}}>
+          ← Volver
+        </button>
+        <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:18, marginBottom:18}}>
+          <div style={{display:"flex", alignItems:"center", gap:14, marginBottom:16}}>
+            <div style={{width:44, height:44, borderRadius:"50%", background:CARD2, border:`2px solid ${ACCENT}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:BRIGHT, fontWeight:700}}>
+              {emp?.nombre[0].toUpperCase()}
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:16, fontWeight:700, color:BRIGHT}}>{emp?.nombre}</div>
+              <div style={{fontSize:12, color:MUTED}}>{registros.length} propinas</div>
+            </div>
+            <div style={{fontSize:18, fontWeight:700, color:GREEN}}>${total.toFixed(2)}</div>
+          </div>
+          <div style={{marginBottom:16}}>
+            <label style={LABEL}>Desde</label>
+            <input type="date" value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} style={INPUT}/>
+          </div>
+          <div style={{marginBottom:16}}>
+            <label style={LABEL}>Hasta</label>
+            <input type="date" value={fechaHasta} onChange={e=>setFechaHasta(e.target.value)} style={INPUT}/>
+          </div>
+          <button onClick={enviarWA} disabled={registros.length===0} style={{width:"100%", padding:14, background:registros.length>0?"#25d366":"#555", border:"none", borderRadius:10, color:"#fff", fontWeight:600, cursor:registros.length>0?"pointer":"not-allowed", opacity:registros.length>0?1:0.5, fontSize:15}}>
+            📲 Enviar WhatsApp
+          </button>
+        </div>
+        {registros.length === 0 ? (
+          <div style={{textAlign:"center", padding:"40px 20px", color:MUTED}}>Sin registros en este período</div>
+        ) : (
+          registros.map(h=>{
+            const d = h.detalles?.find(x=>x.empId===selectedEmp);
+            return (
+              <div key={h.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:"15px 16px", marginBottom:10}}>
+                <div style={{display:"flex", justifyContent:"space-between"}}>
+                  <div>
+                    <div style={{fontWeight:600, fontSize:14, color:BRIGHT}}>
+                      {fmtDate(h.fechaPropina)} <span style={{fontSize:11, color:tc(h.turno), background:tc(h.turno)+"22", padding:"2px 7px", borderRadius:20}}>{h.turno}</span>
+                    </div>
+                    <div style={{fontSize:11, color:MUTED, marginTop:4}}>{d?.puesto} · {d?.horas}h</div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontWeight:700, fontSize:16, color:GREEN}}>${Number(d?.cobro||0).toFixed(2)}</div>
+                    <div style={{fontSize:10, color:d?.cobrado?GREEN:MUTED}}>{d?.cobrado?"Pagada ✓":"Pendiente ⏳"}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
   }
-  return (<div>{personal.length === 0 ? (<div style={{textAlign:"center", padding:"48px 20px", color:MUTED}}>👤 Sin empleados</div>) : (<div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, overflow:"hidden"}}>{personal.map((p,i)=>{const cant=historial.filter(h=>h.detalles?.some(d=>d.empId===p.id)).length;const tot=historial.reduce((sum,h)=>{const d=h.detalles?.find(x=>x.empId===p.id); return sum+(d?Number(d.cobro):0);}, 0);return (<div key={p.id} onClick={()=>setSelectedEmp(p.id)} style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px", borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none", cursor:"pointer"}}><div style={{display:"flex", alignItems:"center", gap:12}}><div style={{width:38, height:38, borderRadius:"50%", background:CARD2, border:`1px solid ${ACCENT}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, color:BRIGHT, fontWeight:700}}>{p.nombre[0].toUpperCase()}</div><div><div style={{fontSize:15, fontWeight:500, color:BRIGHT}}>{p.nombre}</div><div style={{fontSize:11, color:MUTED}}>{cant} propinas</div></div></div><div style={{textAlign:"right"}}><div style={{fontSize:15, fontWeight:700, color:GREEN}}>{tot>0?`$${tot.toFixed(2)}`:"—"}</div></div></div>);})}</div>)} </div>);
+
+  return (
+    <div>
+      {personal.length === 0 ? (
+        <div style={{textAlign:"center", padding:"48px 20px", color:MUTED}}>👤 Sin empleados</div>
+      ) : (
+        <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, overflow:"hidden"}}>
+          {personal.map((p,i)=>{
+            const cant = historial.filter(h=>h.detalles?.some(d=>d.empId===p.id)).length;
+            const tot = historial.reduce((sum,h)=>{
+              const d = h.detalles?.find(x=>x.empId===p.id);
+              return sum + (d ? Number(d.cobro) : 0);
+            }, 0);
+            return (
+              <div key={p.id} onClick={()=>setSelectedEmp(p.id)} style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px", borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none", cursor:"pointer"}}>
+                <div style={{display:"flex", alignItems:"center", gap:12}}>
+                  <div style={{width:38, height:38, borderRadius:"50%", background:CARD2, border:`1px solid ${ACCENT}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, color:BRIGHT, fontWeight:700}}>
+                    {p.nombre[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{fontSize:15, fontWeight:500, color:BRIGHT}}>{p.nombre}</div>
+                    <div style={{fontSize:11, color:MUTED}}>{cant} propinas</div>
+                  </div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontSize:15, fontWeight:700, color:GREEN}}>{tot>0?`$${tot.toFixed(2)}`:"—"}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function TabPersonal({personal, nuevoNombre, setNuevoNombre, addPersonal, delEmp}) {
   const [confirmId, setConfirmId] = useState(null);
-  return (<div><div style={{display:"flex", gap:10, marginBottom:18}}><input value={nuevoNombre} onChange={e=>setNuevoNombre(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addPersonal()} placeholder="Nombre..." style={{...INPUT, flex:1}}/><button onClick={()=>{const n=nuevoNombre.trim(); if(n&&!personal.some(p=>p.nombre.toLowerCase()===n.toLowerCase())) {addPersonal(); setNuevoNombre("");}}} style={{padding:"16px 20px", background:"#fff", border:"none", borderRadius:10, color:"#000", fontSize:20, fontWeight:700, cursor:"pointer", flexShrink:0}}>+</button></div>{personal.length === 0 ? (<div style={{textAlign:"center", padding:"48px 20px", color:MUTED}}>Sin empleados</div>) : (<div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, overflow:"hidden"}}>{personal.map((p,i)=><div key={p.id} style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"15px 16px", borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none"}}><div style={{display:"flex", alignItems:"center", gap:12}}><div style={{width:36, height:36, borderRadius:"50%", background:CARD2, border:`1px solid ${ACCENT}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, color:BRIGHT, fontWeight:700}}>{p.nombre[0].toUpperCase()}</div><span style={{fontSize:15, fontWeight:500, color:BRIGHT}}>{p.nombre}</span></div>{confirmId===p.id ? (<div style={{display:"flex", gap:6}}><button onClick={()=>{delEmp(p.id); setConfirmId(null);}} style={{padding:"7px 12px", background:"#dc262615", border:`1px solid ${RED}`, borderRadius:8, color:RED, fontSize:12, cursor:"pointer"}}>Sí</button><button onClick={()=>setConfirmId(null)} style={{padding:"7px 10px", background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:MUTED, fontSize:12, cursor:"pointer"}}>No</button></div>) : (<button onClick={()=>setConfirmId(p.id)} style={{padding:"7px 14px", background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:MUTED, fontSize:12, cursor:"pointer"}}>Eliminar</button>)}</div>)}</div>) }</div>);
+
+  return (
+    <div>
+      <div style={{display:"flex", gap:10, marginBottom:18}}>
+        <input 
+          value={nuevoNombre} 
+          onChange={e=>setNuevoNombre(e.target.value)} 
+          onKeyDown={e=>e.key==="Enter"&&addPersonal()} 
+          placeholder="Nombre..." 
+          style={{...INPUT, flex:1}}
+        />
+        <button 
+          onClick={()=>{
+            const n=nuevoNombre.trim(); 
+            if(n&&!personal.some(p=>p.nombre.toLowerCase()===n.toLowerCase())) {
+              addPersonal(); 
+              setNuevoNombre("");
+            }
+          }} 
+          style={{padding:"16px 20px", background:"#fff", border:"none", borderRadius:10, color:"#000", fontSize:20, fontWeight:700, cursor:"pointer", flexShrink:0}}
+        >
+          +
+        </button>
+      </div>
+      {personal.length === 0 ? (
+        <div style={{textAlign:"center", padding:"48px 20px", color:MUTED}}>Sin empleados</div>
+      ) : (
+        <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, overflow:"hidden"}}>
+          {personal.map((p,i)=>
+            <div key={p.id} style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"15px 16px", borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none"}}>
+              <div style={{display:"flex", alignItems:"center", gap:12}}>
+                <div style={{width:36, height:36, borderRadius:"50%", background:CARD2, border:`1px solid ${ACCENT}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, color:BRIGHT, fontWeight:700}}>
+                  {p.nombre[0].toUpperCase()}
+                </div>
+                <span style={{fontSize:15, fontWeight:500, color:BRIGHT}}>{p.nombre}</span>
+              </div>
+              {confirmId===p.id ? (
+                <div style={{display:"flex", gap:6}}>
+                  <button onClick={()=>{delEmp(p.id); setConfirmId(null);}} style={{padding:"7px 12px", background:"#dc262615", border:`1px solid ${RED}`, borderRadius:8, color:RED, fontSize:12, cursor:"pointer"}}>
+                    Sí
+                  </button>
+                  <button onClick={()=>setConfirmId(null)} style={{padding:"7px 10px", background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:MUTED, fontSize:12, cursor:"pointer"}}>
+                    No
+                  </button>
+                </div>
+              ) : (
+                <button onClick={()=>setConfirmId(p.id)} style={{padding:"7px 14px", background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:MUTED, fontSize:12, cursor:"pointer"}}>
+                  Eliminar
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
