@@ -281,11 +281,11 @@ function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, f
     <div>
       <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20, marginBottom:24}}>
         <div style={SECTIT}>Datos</div>
-        <div style={{marginBottom:24}}>
+        <div style={{marginBottom:32}}>
           <label style={LABEL}>Fecha pago</label>
           <input type="date" value={fechaPago} onChange={e=>setFechaPago(e.target.value)} style={INPUT}/>
         </div>
-        <div style={{marginBottom:24}}>
+        <div style={{marginBottom:32}}>
           <label style={LABEL}>Fecha propina</label>
           <input type="date" value={fechaPropina} onChange={e=>setFechaPropina(e.target.value)} style={INPUT}/>
         </div>
@@ -494,11 +494,11 @@ function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDe
             </div>
             <div style={{fontSize:18, fontWeight:700, color:GREEN}}>${total.toFixed(2)}</div>
           </div>
-          <div style={{marginBottom:24}}>
+          <div style={{marginBottom:32}}>
             <label style={LABEL}>Desde</label>
             <input type="date" value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} style={INPUT}/>
           </div>
-          <div style={{marginBottom:24}}>
+          <div style={{marginBottom:32}}>
             <label style={LABEL}>Hasta</label>
             <input type="date" value={fechaHasta} onChange={e=>setFechaHasta(e.target.value)} style={INPUT}/>
           </div>
