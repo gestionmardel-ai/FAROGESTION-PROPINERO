@@ -42,7 +42,7 @@ const delBorrador = (id) => sb(`/propinas_borradores?id=eq.${id}`, {method:"DELE
 const patchReg = (id, dt) => sb(`/propinas_historial?id=eq.${id}`, {method:"PATCH", body:JSON.stringify({detalles:dt})});
 const deleteReg = (id) => sb(`/propinas_historial?id=eq.${id}`, {method:"DELETE", headers:{"Prefer":""}});
 
-const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"16px 18px", outline:"none", width:"100%"};
+const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"14px 16px", outline:"none", width:"100%", boxSizing:"border-box"};
 const LABEL = {fontSize:11, color:MUTED, marginBottom:12, display:"block"};
 const SECTIT = {fontSize:10, color:ACCENT, letterSpacing:2, textTransform:"uppercase", fontWeight:600, marginBottom:14};
 
