@@ -15,6 +15,7 @@ const YEAR = "2026";
 const BG="#f6f7fb",CARD="#ffffff",CARD2="#f3f4f6",BORDER="#d6d9e0",TEXT="#101218";
 const BRIGHT="#111111",MUTED="#555b66",ACCENT="#2a2f3a",GREEN="#22c55e",GDIM="#22c55e1f";
 const RED="#dc2626",RDIM="#dc262615";
+const FONT="'Atkinson Hyperlegible', 'Segoe UI', Tahoma, sans-serif";
 
 const todayStr=()=>new Date().toISOString().split("T")[0];
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -41,9 +42,9 @@ const delBorrador=(id)=>sb(`/propinas_borradores?id=eq.${id}`,{method:"DELETE",h
 const patchReg=(id,dt)=>sb(`/propinas_historial?id=eq.${id}`,{method:"PATCH",body:JSON.stringify({detalles:dt})});
 const deleteReg=(id)=>sb(`/propinas_historial?id=eq.${id}`,{method:"DELETE",headers:{"Prefer":""}});
 
-const INPUT={background:CARD2,border:`1px solid ${BORDER}`,borderRadius:10,color:TEXT,fontFamily:"'Inter',system-ui,sans-serif",fontSize:16,padding:"13px 14px",outline:"none",boxSizing:"border-box",WebkitAppearance:"none",width:"100%"};
+const INPUT={background:CARD2,border:`1px solid ${BORDER}`,borderRadius:10,color:TEXT,fontFamily:FONT,fontSize:16,padding:"13px 14px",outline:"none",boxSizing:"border-box",WebkitAppearance:"none",width:"100%"};
 const CARD_S={background:CARD,border:`1px solid ${BORDER}`,borderRadius:14,padding:"16px",marginBottom:12};
-const pill=(a)=>({flex:1,padding:"10px 4px",borderRadius:10,border:`1px solid ${a?ACCENT:BORDER}`,background:a?"#eef1f6":"transparent",color:a?BRIGHT:MUTED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:14,fontWeight:a?600:500,cursor:"pointer"});
+const pill=(a)=>({flex:1,padding:"10px 4px",borderRadius:10,border:`1px solid ${a?ACCENT:BORDER}`,background:a?"#eef1f6":"transparent",color:a?BRIGHT:MUTED,fontFamily:FONT,fontSize:14,fontWeight:a?600:500,cursor:"pointer"});
 const LABEL={fontSize:13,color:MUTED,display:"block",marginBottom:6};
 const SECTIT={fontSize:11,color:MUTED,letterSpacing:2.5,textTransform:"uppercase",fontWeight:700,marginBottom:12};
 
@@ -77,7 +78,7 @@ export default function App(){
   const[selectedEmp,setSelectedEmp]=useState(null);
   const[convertMode,setConvertMode]=useState(null);
 
-  useEffect(()=>{const l=document.createElement("link");l.href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";l.rel="stylesheet";document.head.appendChild(l);},[]);
+  useEffect(()=>{const l=document.createElement("link");l.href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap";l.rel="stylesheet";document.head.appendChild(l);},[]);
 
   const login=(u,p)=>{
     if(USUARIOS[u]&&USUARIOS[u]===p){
@@ -206,7 +207,7 @@ export default function App(){
               <input type="password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login(usuario,pass)} style={INPUT}/>
             </div>
             {loginError&&<div style={{fontSize:13,color:RED,marginBottom:12,padding:"8px",background:RDIM,borderRadius:8}}>{loginError}</div>}
-            <button onClick={()=>login(usuario,pass)} style={{width:"100%",padding:"13px",background:BRIGHT,border:"none",borderRadius:10,color:"#fff",fontFamily:"'Inter',system-ui,sans-serif",fontSize:16,fontWeight:700,cursor:"pointer"}}>
+            <button onClick={()=>login(usuario,pass)} style={{width:"100%",padding:"13px",background:BRIGHT,border:"none",borderRadius:10,color:"#fff",fontFamily:FONT,fontSize:16,fontWeight:700,cursor:"pointer"}}>
               Entrar
             </button>
           </div>
@@ -234,7 +235,7 @@ export default function App(){
   ];
 
   return(
-    <div style={{minHeight:"100vh",background:BG,color:TEXT,fontFamily:"'Inter',system-ui,sans-serif",paddingBottom:122,maxWidth:500,margin:"0 auto"}}>
+    <div style={{minHeight:"100vh",background:BG,color:TEXT,fontFamily:FONT,paddingBottom:122,maxWidth:500,margin:"0 auto"}}>
       <div style={{background:CARD,borderBottom:`1px solid ${BORDER}`,padding:"10px 16px",position:"sticky",top:0,zIndex:10}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <img src={LOGO_B64} alt="FaroGestion" style={{height:36}}/>
@@ -242,7 +243,7 @@ export default function App(){
             <div style={{fontSize:17,fontWeight:700,color:BRIGHT}}>Propinero</div>
             <div style={{fontSize:11,color:MUTED}}>🔑 {usuario.charAt(0).toUpperCase()+usuario.slice(1)}</div>
           </div>
-          <button onClick={logout} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:RED,padding:"6px 12px",fontFamily:"'Inter',system-ui,sans-serif",fontSize:13,cursor:"pointer"}}>Salir</button>
+          <button onClick={logout} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:RED,padding:"6px 12px",fontFamily:FONT,fontSize:13,cursor:"pointer"}}>Salir</button>
         </div>
       </div>
 
@@ -259,7 +260,7 @@ export default function App(){
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:70,background:"none",border:"none",padding:"6px 0 8px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
             <span style={{fontSize:18}}>{t.icon}</span>
-            <span style={{fontSize:11,color:tab===t.id?BRIGHT:MUTED,fontWeight:tab===t.id?600:500,fontFamily:"'Inter',system-ui,sans-serif",whiteSpace:"nowrap"}}>{t.label}</span>
+            <span style={{fontSize:11,color:tab===t.id?BRIGHT:MUTED,fontWeight:tab===t.id?600:500,fontFamily:FONT,whiteSpace:"nowrap"}}>{t.label}</span>
             {tab===t.id&&<div style={{width:20,height:2,background:BRIGHT,borderRadius:1}}/>}
           </button>
         ))}
@@ -345,10 +346,10 @@ function RegistrarTab({personal,distrib,updDistrib,fechaPago,setFechaPago,fechaP
       )}
 
       <div style={{display:"flex",gap:8,marginBottom:20}}>
-        <button onClick={guardarBorrador} style={{flex:1,padding:"14px",background:"#2f3642",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Inter',system-ui,sans-serif",fontSize:15,fontWeight:700,cursor:"pointer"}}>
+        <button onClick={guardarBorrador} style={{flex:1,padding:"14px",background:"#2f3642",border:"none",borderRadius:14,color:"#fff",fontFamily:FONT,fontSize:15,fontWeight:700,cursor:"pointer"}}>
           📝 Guardar Borrador
         </button>
-        <button onClick={guardarPropina} disabled={!montoNum} style={{flex:1,padding:"14px",background:montoNum?"#111":"#9ca3af",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Inter',system-ui,sans-serif",fontSize:15,fontWeight:700,cursor:montoNum?"pointer":"not-allowed",opacity:montoNum?1:0.5}}>
+        <button onClick={guardarPropina} disabled={!montoNum} style={{flex:1,padding:"14px",background:montoNum?"#111":"#9ca3af",border:"none",borderRadius:14,color:"#fff",fontFamily:FONT,fontSize:15,fontWeight:700,cursor:montoNum?"pointer":"not-allowed",opacity:montoNum?1:0.5}}>
           {flash?"✓ Guardado!":"💾 Guardar Propina"}
         </button>
       </div>
@@ -379,7 +380,7 @@ function BorradoresTab({borradores,personal,delBorrador,convertirBorrador,conver
               <div style={{fontSize:11,color:MUTED,marginTop:2}}>{b.turno} · Pagó {b.pagadoPor}</div>
               <div style={{fontSize:10,color:MUTED,marginTop:4}}>👤 {b.distribucion.filter(r=>r.empId).length} empleado{b.distribucion.filter(r=>r.empId).length!==1?"s":""} · 🕐 {b.distribucion.reduce((s,r)=>s+(r.empId&&r.horas>0?r.horas:0),0)}h</div>
             </div>
-            <button onClick={()=>delBorrador(b.id)} style={{background:RDIM,border:`1px solid ${RED}44`,borderRadius:8,color:RED,padding:"6px 12px",fontFamily:"'Inter',system-ui,sans-serif",fontSize:11,cursor:"pointer"}}>🗑 Eliminar</button>
+            <button onClick={()=>delBorrador(b.id)} style={{background:RDIM,border:`1px solid ${RED}44`,borderRadius:8,color:RED,padding:"6px 12px",fontFamily:FONT,fontSize:11,cursor:"pointer"}}>🗑 Eliminar</button>
           </div>
 
           {convertMode===b.id?(
@@ -390,12 +391,12 @@ function BorradoresTab({borradores,personal,delBorrador,convertirBorrador,conver
                   <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:BRIGHT,fontWeight:700,pointerEvents:"none"}}>$</span>
                   <input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={{...INPUT,paddingLeft:28,marginBottom:0}}/>
                 </div>
-                <button onClick={()=>{convertirBorrador(b,monto);setMonto("");setConvertMode(null);}} style={{padding:"12px 20px",background:GREEN,border:"none",borderRadius:10,color:"#000",fontFamily:"'Inter',system-ui,sans-serif",fontWeight:700,cursor:"pointer"}}>Convertir</button>
-                <button onClick={()=>{setMonto("");setConvertMode(null);}} style={{padding:"12px 16px",background:"none",border:`1px solid ${BORDER}`,borderRadius:10,color:MUTED,fontFamily:"'Inter',system-ui,sans-serif",cursor:"pointer"}}>Cancelar</button>
+                <button onClick={()=>{convertirBorrador(b,monto);setMonto("");setConvertMode(null);}} style={{padding:"12px 20px",background:GREEN,border:"none",borderRadius:10,color:"#000",fontFamily:FONT,fontWeight:700,cursor:"pointer"}}>Convertir</button>
+                <button onClick={()=>{setMonto("");setConvertMode(null);}} style={{padding:"12px 16px",background:"none",border:`1px solid ${BORDER}`,borderRadius:10,color:MUTED,fontFamily:FONT,cursor:"pointer"}}>Cancelar</button>
               </div>
             </div>
           ):(
-            <button onClick={()=>setConvertMode(b.id)} style={{width:"100%",padding:"10px",background:GREEN+"33",border:`1px solid ${GREEN}44`,borderRadius:10,color:GREEN,fontFamily:"'Inter',system-ui,sans-serif",fontWeight:600,cursor:"pointer",marginTop:12}}>→ Convertir a Propina</button>
+            <button onClick={()=>setConvertMode(b.id)} style={{width:"100%",padding:"10px",background:GREEN+"33",border:`1px solid ${GREEN}44`,borderRadius:10,color:GREEN,fontFamily:FONT,fontWeight:600,cursor:"pointer",marginTop:12}}>→ Convertir a Propina</button>
           )}
         </div>
       ))}
@@ -463,11 +464,11 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado,eliminar
                   <span style={{fontSize:12,color:MUTED}}>\$${Number(h.ratePH||0).toFixed(2)}/h</span>
                   {confirmDel===h.id?(
                     <div style={{display:"flex",gap:6}}>
-                      <button onClick={()=>{eliminarReg(h.id);setConfirmDel(null);}} style={{padding:"6px 12px",background:RDIM,border:`1px solid ${RED}`,borderRadius:8,color:RED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:12,cursor:"pointer"}}>Sí, eliminar</button>
-                      <button onClick={()=>setConfirmDel(null)} style={{padding:"6px 10px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:MUTED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:12,cursor:"pointer"}}>No</button>
+                      <button onClick={()=>{eliminarReg(h.id);setConfirmDel(null);}} style={{padding:"6px 12px",background:RDIM,border:`1px solid ${RED}`,borderRadius:8,color:RED,fontFamily:FONT,fontSize:12,cursor:"pointer"}}>Sí, eliminar</button>
+                      <button onClick={()=>setConfirmDel(null)} style={{padding:"6px 10px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:MUTED,fontFamily:FONT,fontSize:12,cursor:"pointer"}}>No</button>
                     </div>
                   ):(
-                    <button onClick={()=>setConfirmDel(h.id)} style={{padding:"6px 14px",background:RDIM,border:`1px solid ${RED}44`,borderRadius:8,color:RED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:12,cursor:"pointer"}}>🗑 Eliminar</button>
+                    <button onClick={()=>setConfirmDel(h.id)} style={{padding:"6px 14px",background:RDIM,border:`1px solid ${RED}44`,borderRadius:8,color:RED,fontFamily:FONT,fontSize:12,cursor:"pointer"}}>🗑 Eliminar</button>
                   )}
                 </div>
               </div>
@@ -480,10 +481,20 @@ function HistorialTab({historial,expandedId,setExpandedId,toggleCobrado,eliminar
 }
 
 function RegistrosTab({personal,historial,selectedEmp,setSelectedEmp}){
+  const [fechaDesde,setFechaDesde]=useState("");
+  const [fechaHasta,setFechaHasta]=useState("");
   const tc=(t)=>t==="Mañana"?"#fbbf24":t==="Noche"?"#818cf8":"#34d399";
   const enviarWhatsApp=(emp,registros)=>{
     const lineas=[`🍽️ *FAROGESTION - PROPINERO*\n`,`👤 *${emp.nombre}*\n`];
-    sortByFechaAsc(registros).forEach(h=>{const det=h.detalles?.find(d=>d.empId===emp.id);if(det){lineas.push(`📅 ${fmtDate(h.fechaPropina)} - ${h.turno}`);lineas.push(`📍 ${det.puesto} · ${det.horas}h`);lineas.push(`💰 $${Number(det.cobro).toFixed(2)} ${det.cobrado?"✅":"⏳"}`);lineas.push("");}});
+    sortByFechaAsc(registros).forEach(h=>{
+      const det=h.detalles?.find(d=>d.empId===emp.id);
+      if(det){
+        lineas.push(`📅 ${fmtDate(h.fechaPropina)} - ${h.turno}`);
+        lineas.push(`📍 ${det.puesto} · ${det.horas}h`);
+        lineas.push(`💰 $${Number(det.cobro).toFixed(2)} ${det.cobrado?"Pagado":"Pendiente"}`);
+        lineas.push("");
+      }
+    });
     const total=registros.reduce((sum,h)=>{const det=h.detalles?.find(d=>d.empId===emp.id);return sum+(det?Number(det.cobro):0);},0);
     lineas.push(`💵 *Total cobrado: $${total.toFixed(2)}*`);
     lineas.push(`\n_Enviado desde FaroGestion Propinero_`);
@@ -493,22 +504,47 @@ function RegistrosTab({personal,historial,selectedEmp,setSelectedEmp}){
 
   if(selectedEmp){
     const emp=personal.find(p=>p.id===selectedEmp);
-    const registros=sortByFechaAsc(historial.filter(h=>h.detalles?.some(d=>d.empId===selectedEmp)));
+    const baseRegistros=historial.filter(h=>h.detalles?.some(d=>d.empId===selectedEmp));
+    const filtrados=baseRegistros.filter(h=>{
+      if(fechaDesde&&h.fechaPropina<fechaDesde)return false;
+      if(fechaHasta&&h.fechaPropina>fechaHasta)return false;
+      return true;
+    });
+    const registros=sortByFechaAsc(filtrados);
     const total=registros.reduce((sum,h)=>{const det=h.detalles?.find(d=>d.empId===selectedEmp);return sum+(det?Number(det.cobro):0);},0);
     return(
       <div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <button onClick={()=>setSelectedEmp(null)} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:10,color:MUTED,padding:"8px 14px",fontFamily:"'Inter',system-ui,sans-serif",fontSize:14,cursor:"pointer"}}>← Volver</button>
-          <button onClick={()=>enviarWhatsApp(emp,registros)} style={{background:"#25d366",border:"none",borderRadius:10,color:"#000",padding:"8px 16px",fontFamily:"'Inter',system-ui,sans-serif",fontSize:14,fontWeight:700,cursor:"pointer"}}>📲 WhatsApp</button>
+          <button onClick={()=>setSelectedEmp(null)} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:10,color:MUTED,padding:"8px 14px",fontFamily:FONT,fontSize:14,cursor:"pointer"}}>← Volver</button>
+          <button onClick={()=>enviarWhatsApp(emp,registros)} style={{background:"#25d366",border:"none",borderRadius:10,color:"#000",padding:"8px 16px",fontFamily:FONT,fontSize:14,fontWeight:700,cursor:"pointer"}}>📲 WhatsApp</button>
         </div>
         <div style={{...CARD_S,marginBottom:16}}>
-          <div style={{display:"flex",alignItems:"center",gap:14}}>
+          <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:12}}>
             <div style={{width:46,height:46,borderRadius:"50%",background:CARD2,border:`2px solid ${ACCENT}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:BRIGHT,fontWeight:700}}>{emp?.nombre[0].toUpperCase()}</div>
             <div><div style={{fontSize:20,fontWeight:700,color:BRIGHT}}>{emp?.nombre}</div><div style={{fontSize:13,color:MUTED}}>{registros.length} propinas</div></div>
             <div style={{marginLeft:"auto",textAlign:"right"}}><div style={{fontSize:11,color:MUTED}}>Total cobrado</div><div style={{fontSize:20,fontWeight:700,color:GREEN}}>${total.toFixed(2)}</div></div>
           </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <div>
+              <label style={LABEL}>Desde</label>
+              <input type="date" value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} style={INPUT}/>
+            </div>
+            <div>
+              <label style={LABEL}>Hasta</label>
+              <input type="date" value={fechaHasta} onChange={e=>setFechaHasta(e.target.value)} style={INPUT}/>
+            </div>
+          </div>
+          <div style={{display:"flex",justifyContent:"flex-end",marginTop:10}}>
+            <button
+              onClick={()=>{setFechaDesde("");setFechaHasta("");}}
+              disabled={!fechaDesde&&!fechaHasta}
+              style={{padding:"8px 12px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:!fechaDesde&&!fechaHasta?"#9aa1ad":MUTED,fontFamily:FONT,fontSize:13,cursor:!fechaDesde&&!fechaHasta?"not-allowed":"pointer"}}
+            >
+              Limpiar fechas
+            </button>
+          </div>
         </div>
-        {registros.length===0?(<div style={{textAlign:"center",padding:"40px 20px",color:MUTED}}>📭 No hay propinas</div>):registros.map(h=>{const det=h.detalles?.find(d=>d.empId===selectedEmp);return(<div key={h.id} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"14px 16px",marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{fontWeight:600,fontSize:14,color:BRIGHT}}>{fmtDate(h.fechaPropina)}<span style={{marginLeft:8,fontSize:11,color:tc(h.turno),background:tc(h.turno)+"22",padding:"2px 7px",borderRadius:20}}>{h.turno}</span></div><div style={{fontSize:11,color:MUTED}}>{det?.puesto} · {det?.horas}h · Pagó {h.pagadoPor}</div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:18,color:GREEN}}>${Number(det?.cobro||0).toFixed(2)}</div><div style={{fontSize:10,color:det?.cobrado?GREEN:MUTED}}>{det?.cobrado?"✓":"Pendiente"}</div></div></div></div>);})}
+        {registros.length===0?(<div style={{textAlign:"center",padding:"40px 20px",color:MUTED}}>📭 No hay propinas en ese rango</div>):registros.map(h=>{const det=h.detalles?.find(d=>d.empId===selectedEmp);return(<div key={h.id} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"14px 16px",marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{fontWeight:600,fontSize:14,color:BRIGHT}}>{fmtDate(h.fechaPropina)}<span style={{marginLeft:8,fontSize:11,color:tc(h.turno),background:tc(h.turno)+"22",padding:"2px 7px",borderRadius:20}}>{h.turno}</span></div><div style={{fontSize:11,color:MUTED}}>{det?.puesto} · {det?.horas}h · Pagó {h.pagadoPor}</div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:18,color:GREEN}}>${Number(det?.cobro||0).toFixed(2)}</div><div style={{fontSize:10,color:det?.cobrado?GREEN:MUTED}}>{det?.cobrado?"Pagado":"Pendiente"}</div></div></div></div>);})}
       </div>
     );
   }
@@ -530,9 +566,9 @@ function PersonalTab({personal,nuevoNombre,setNuevoNombre,addPersonal,delPersona
       </div>
       <div style={{display:"flex",gap:8,marginBottom:16}}>
         <input value={nuevoNombre} onChange={e=>setNuevoNombre(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addPersonal()} placeholder="Nombre del empleado..." style={{...INPUT,flex:1}}/>
-        <button onClick={addPersonal} style={{padding:"12px 20px",background:"#ffffff",border:"none",borderRadius:10,color:"#000",fontFamily:"'Inter',system-ui,sans-serif",fontSize:20,fontWeight:700,cursor:"pointer",flexShrink:0}}>+</button>
+        <button onClick={addPersonal} style={{padding:"12px 20px",background:"#ffffff",border:"none",borderRadius:10,color:"#000",fontFamily:FONT,fontSize:20,fontWeight:700,cursor:"pointer",flexShrink:0}}>+</button>
       </div>
-      {personal.length===0?(<div style={{textAlign:"center",padding:"48px 20px",color:MUTED}}>👥 No hay empleados</div>):(<div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:14,overflow:"hidden"}}>{personal.map((p,i)=>(<div key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 16px",borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:CARD2,border:`1px solid ${ACCENT}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:BRIGHT,fontWeight:700}}>{p.nombre[0].toUpperCase()}</div><span style={{fontSize:15,fontWeight:500,color:BRIGHT}}>{p.nombre}</span></div>{confirmId===p.id?(<div style={{display:"flex",gap:6}}><button onClick={()=>{delPersonal(p.id);setConfirmId(null);}} style={{padding:"6px 12px",background:RDIM,border:`1px solid ${RED}`,borderRadius:8,color:RED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:12,cursor:"pointer"}}>Sí, borrar</button><button onClick={()=>setConfirmId(null)} style={{padding:"6px 10px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:MUTED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:12,cursor:"pointer"}}>No</button></div>):(<button onClick={()=>setConfirmId(p.id)} style={{padding:"6px 14px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:MUTED,fontFamily:"'Inter',system-ui,sans-serif",fontSize:12,cursor:"pointer"}}>Eliminar</button>)}</div>))}</div>)}
+      {personal.length===0?(<div style={{textAlign:"center",padding:"48px 20px",color:MUTED}}>👥 No hay empleados</div>):(<div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:14,overflow:"hidden"}}>{personal.map((p,i)=>(<div key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 16px",borderBottom:i<personal.length-1?`1px solid ${BORDER}`:"none"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:CARD2,border:`1px solid ${ACCENT}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:BRIGHT,fontWeight:700}}>{p.nombre[0].toUpperCase()}</div><span style={{fontSize:15,fontWeight:500,color:BRIGHT}}>{p.nombre}</span></div>{confirmId===p.id?(<div style={{display:"flex",gap:6}}><button onClick={()=>{delPersonal(p.id);setConfirmId(null);}} style={{padding:"6px 12px",background:RDIM,border:`1px solid ${RED}`,borderRadius:8,color:RED,fontFamily:FONT,fontSize:12,cursor:"pointer"}}>Sí, borrar</button><button onClick={()=>setConfirmId(null)} style={{padding:"6px 10px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:MUTED,fontFamily:FONT,fontSize:12,cursor:"pointer"}}>No</button></div>):(<button onClick={()=>setConfirmId(p.id)} style={{padding:"6px 14px",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,color:MUTED,fontFamily:FONT,fontSize:12,cursor:"pointer"}}>Eliminar</button>)}</div>))}</div>)}
     </div>
   );
 }
