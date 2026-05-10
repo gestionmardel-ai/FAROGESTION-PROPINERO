@@ -1,20 +1,20 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
-
+ 
 const SUPABASE_URL = "https://vuzyvdfftdjrgbchpebk.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1enl2ZGZmdGRqcmdiY2hwZWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzg2NjYsImV4cCI6MjA5Mzc1NDY2Nn0.G0__BqrBq_Tsg2raq3rbyxzPeCgzxGE4kTCm9uZGSl0";
-
+ 
 const PUESTOS = ["Bacha 1","Bacha 2","Cafetería","Caja","Recepcionista","Encargado Salón","Cocina 1","Cocina 2","Cocina 3","Cocina 4","Cocina 5","Cocina 6","Cocina 7","Cocina 8"];
 const PAGADORES = ["Cristian","Valentina","Daniel"];
 const TURNOS = ["Mañana","Noche","Evento"];
 const USUARIOS = { cristian: "cristian1492", valentina: "valentina1492", daniel: "daniel1492" };
-
+ 
 const BG="#000",CARD="#0d0d0d",CARD2="#161616",BORDER="#2a2a2a",BRIGHT="#f0f0f0",MUTED="#666",ACCENT="#e0e0e0",GREEN="#22c55e",RED="#dc2626";
-
+ 
 const todayStr = () => new Date().toISOString().split("T")[0];
 const uid = () => Math.random().toString(36).slice(2,9);
 const fmtDate = (d) => { if(!d) return "—"; const [y,m,day] = d.split("-"); return `${day}/${m}/${y}`; };
-
+ 
 const sb = async(path, options = {}) => {
   const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
     ...options,
@@ -30,7 +30,7 @@ const sb = async(path, options = {}) => {
   if(!res.ok) throw new Error(text);
   return text ? JSON.parse(text) : [];
 };
-
+ 
 const getPersonal = () => sb("/propinas_personal?order=nombre.asc");
 const getHistorial = () => sb("/propinas_historial?order=created_at.desc");
 const getBorradores = () => sb("/propinas_borradores?order=created_at.desc");
@@ -41,11 +41,11 @@ const addBorrador = (b) => sb("/propinas_borradores", {method:"POST", body:JSON.
 const delBorrador = (id) => sb(`/propinas_borradores?id=eq.${id}`, {method:"DELETE", headers:{"Prefer":""}});
 const patchReg = (id, dt) => sb(`/propinas_historial?id=eq.${id}`, {method:"PATCH", body:JSON.stringify({detalles:dt})});
 const deleteReg = (id) => sb(`/propinas_historial?id=eq.${id}`, {method:"DELETE", headers:{"Prefer":""}});
-
+ 
 const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"16px 18px", outline:"none", width:"100%"};
 const LABEL = {fontSize:11, color:MUTED, marginBottom:10, display:"block"};
 const SECTIT = {fontSize:10, color:ACCENT, letterSpacing:2, textTransform:"uppercase", fontWeight:600, marginBottom:14};
-
+ 
 export default function App(){
   const [usuarioSel, setUsuarioSel] = useState("");
   const [usuario, setUsuario] = useState("");
@@ -69,14 +69,14 @@ export default function App(){
   const [fechaDesde, setFechaDesde] = useState("");
   const [fechaHasta, setFechaHasta] = useState("");
   const [nuevoNombre, setNuevoNombre] = useState("");
-
+ 
   useEffect(() => {
     const l = document.createElement("link");
     l.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
     l.rel = "stylesheet";
     document.head.appendChild(l);
   }, []);
-
+ 
   const login = (u, p) => {
     if(!u || !p) { setLoginErr("Ingresa usuario y contraseña"); return; }
     if(USUARIOS[u] && USUARIOS[u] === p) {
@@ -89,14 +89,14 @@ export default function App(){
       setLoginErr("Credenciales incorrectas");
     }
   };
-
+ 
   const logout = () => {
     setLogueado(false);
     setUsuario("");
     setPass("");
     setUsuarioSel("");
   };
-
+ 
   const cargarDatos = async() => {
     try {
       const [p, h, b] = await Promise.all([getPersonal(), getHistorial(), getBorradores()]);
@@ -113,9 +113,9 @@ export default function App(){
     } catch(e) { console.log("Error"); }
     setReady(true);
   };
-
+ 
   useEffect(() => { if(logueado) cargarDatos(); }, [logueado]);
-
+ 
   const montoNum = parseFloat(monto) || 0;
   const totalHs = distrib.reduce((s, r) => s + (r.empId && r.horas > 0 ? r.horas : 0), 0);
   const ratePH = totalHs > 0 && montoNum > 0 ? montoNum / totalHs : 0;
@@ -125,7 +125,7 @@ export default function App(){
     if(key === "empId" && !val) u.horas = 0;
     return u;
   }));
-
+ 
   const guardarBorrador = async() => {
     if(!fechaPago || !fechaPropina || !turno || !pagadoPor) { alert("Completa datos"); return; }
     const b = {id:uid(), fechaPago, fechaPropina, turno, pagadoPor, distribucion:distrib, createdBy:usuario};
@@ -137,7 +137,7 @@ export default function App(){
       setTab("borradores");
     } catch { alert("Error"); }
   };
-
+ 
   const convertirBorrador = async(b, mt) => {
     const mn = parseFloat(mt) || 0;
     if(!mn) { alert("Ingresa monto"); return; }
@@ -162,7 +162,7 @@ export default function App(){
       setTab("historial");
     } catch { alert("Error"); }
   };
-
+ 
   const guardarPropina = async() => {
     if(!fechaPago || !fechaPropina || !turno || !pagadoPor || !montoNum) { alert("Completa todo"); return; }
     const det = distrib.filter(r => r.empId && r.horas > 0).map(r => ({
@@ -181,7 +181,7 @@ export default function App(){
       setTab("historial");
     } catch { alert("Error"); }
   };
-
+ 
   const toggleCobrado = async(regId, idx) => {
     const upd = historial.map(h => {
       if(h.id !== regId) return h;
@@ -190,7 +190,7 @@ export default function App(){
     const reg = upd.find(h => h.id === regId);
     try { await patchReg(regId, reg.detalles); setHistorial(upd); } catch { alert("Error"); }
   };
-
+ 
   const addPersonal = async() => {
     const n = nuevoNombre.trim(); 
     if(!n) return;
@@ -202,7 +202,7 @@ export default function App(){
       setNuevoNombre("");
     } catch { alert("Error"); }
   };
-
+ 
   if(!logueado) {
     return (
       <div style={{minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", padding:"20px"}}>
@@ -235,9 +235,9 @@ export default function App(){
       </div>
     );
   }
-
+ 
   if(!ready) return <div style={{minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center"}}>⏳</div>;
-
+ 
   return (
     <div style={{minHeight:"100vh", background:BG, color:BRIGHT, paddingBottom:80, maxWidth:500, margin:"0 auto"}}>
       <div style={{background:CARD, borderBottom:`1px solid ${BORDER}`, padding:"12px 16px", position:"sticky", top:0, zIndex:10}}>
@@ -247,7 +247,7 @@ export default function App(){
           <button onClick={logout} style={{background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:RED, padding:"6px 12px", fontSize:12, cursor:"pointer"}}>Salir</button>
         </div>
       </div>
-
+ 
       <div style={{padding:"16px"}}>
         {tab==="registrar" && <TabRegistrar {...{personal, distrib, updDistrib, fechaPago, setFechaPago, fechaPropina, setFechaPropina, turno, setTurno, pagadoPor, setPagadoPor, monto, setMonto, totalHs, ratePH, guardarPropina, guardarBorrador}} />}
         {tab==="borradores" && <TabBorradores {...{borradores, personal, delBorrador, convertirBorrador, convertMode, setConvertMode}} />}
@@ -255,7 +255,7 @@ export default function App(){
         {tab==="registros" && <TabRegistros {...{personal, historial, selectedEmp, setSelectedEmp, fechaDesde, setFechaDesde, fechaHasta, setFechaHasta}} />}
         {tab==="personal" && <TabPersonal {...{personal, nuevoNombre, setNuevoNombre, addPersonal, delEmp}} />}
       </div>
-
+ 
       <div style={{position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:500, background:CARD, borderTop:`1px solid ${BORDER}`, display:"flex", zIndex:20}}>
         {[
           {id:"registrar",icon:"✏️",label:"Registrar"},
@@ -273,7 +273,7 @@ export default function App(){
     </div>
   );
 }
-
+ 
 function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, fechaPropina, setFechaPropina, turno, setTurno, pagadoPor, setPagadoPor, monto, setMonto, totalHs, ratePH, guardarPropina, guardarBorrador}) {
   const montoNum = parseFloat(monto) || 0;
   
@@ -346,7 +346,7 @@ function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, f
     </div>
   );
 }
-
+ 
 function TabBorradores({borradores, personal, delBorrador, convertirBorrador, convertMode, setConvertMode}) {
   const [monto, setMonto] = useState("");
   
@@ -387,7 +387,7 @@ function TabBorradores({borradores, personal, delBorrador, convertirBorrador, co
     </div>
   );
 }
-
+ 
 function TabHistorial({historial, expandedId, setExpandedId, toggleCobrado, deleteReg}) {
   const [confirmDel, setConfirmDel] = useState(null);
   const tc = (t) => t==="Mañana"?"#fbbf24":t==="Noche"?"#818cf8":"#34d399";
@@ -456,7 +456,7 @@ function TabHistorial({historial, expandedId, setExpandedId, toggleCobrado, dele
     </div>
   );
 }
-
+ 
 function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDesde, setFechaDesde, fechaHasta, setFechaHasta}) {
   const tc = (t) => t==="Mañana"?"#fbbf24":t==="Noche"?"#818cf8":"#34d399";
   
@@ -477,7 +477,7 @@ function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDe
       }).filter(Boolean).join("\n")}\n💵 Total: $${total.toFixed(2)}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
     };
-
+ 
     return (
       <div>
         <button onClick={()=>setSelectedEmp(null)} style={{background:"none", border:`1px solid ${BORDER}`, borderRadius:10, color:MUTED, padding:"10px 14px", fontSize:13, cursor:"pointer", marginBottom:16}}>
@@ -532,7 +532,7 @@ function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDe
       </div>
     );
   }
-
+ 
   return (
     <div>
       {personal.length === 0 ? (
@@ -567,10 +567,10 @@ function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDe
     </div>
   );
 }
-
+ 
 function TabPersonal({personal, nuevoNombre, setNuevoNombre, addPersonal, delEmp}) {
   const [confirmId, setConfirmId] = useState(null);
-
+ 
   return (
     <div>
       <div style={{display:"flex", gap:10, marginBottom:18}}>
@@ -627,3 +627,4 @@ function TabPersonal({personal, nuevoNombre, setNuevoNombre, addPersonal, delEmp
     </div>
   );
 }
+ 
