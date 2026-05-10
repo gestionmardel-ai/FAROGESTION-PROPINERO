@@ -58,6 +58,7 @@ function FooterBar({ fixed = false }){
 
 export default function App(){
   const[usuario,setUsuario]=useState(localStorage.getItem("fg_usuario")||"");
+  const[usuarioSel,setUsuarioSel]=useState("");
   const[pass,setPass]=useState("");
   const[loginError,setLoginError]=useState("");
   const[tab,setTab]=useState("registrar");
@@ -84,6 +85,7 @@ export default function App(){
     if(USUARIOS[u]&&USUARIOS[u]===p){
       localStorage.setItem("fg_usuario",u);
       setUsuario(u);
+      setUsuarioSel("");
       setPass("");
       setLoginError("");
       cargarDatos();
@@ -95,6 +97,7 @@ export default function App(){
   const logout=()=>{
     localStorage.removeItem("fg_usuario");
     setUsuario("");
+    setUsuarioSel("");
     setPass("");
   };
 
@@ -195,7 +198,7 @@ export default function App(){
             <div style={{fontSize:16,fontWeight:700,color:BRIGHT,marginBottom:16}}>Iniciar sesión</div>
             <div style={{marginBottom:12}}>
               <label style={LABEL}>Usuario</label>
-              <select value={usuario} onChange={e=>setUsuario(e.target.value)} style={INPUT}>
+              <select value={usuarioSel} onChange={e=>setUsuarioSel(e.target.value)} style={INPUT}>
                 <option value="">Seleccionar...</option>
                 <option value="cristian">Cristian</option>
                 <option value="valentina">Valentina</option>
@@ -204,10 +207,10 @@ export default function App(){
             </div>
             <div style={{marginBottom:16}}>
               <label style={LABEL}>Contraseña</label>
-              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login(usuario,pass)} style={INPUT}/>
+              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login(usuarioSel,pass)} style={INPUT}/>
             </div>
             {loginError&&<div style={{fontSize:13,color:RED,marginBottom:12,padding:"8px",background:RDIM,borderRadius:8}}>{loginError}</div>}
-            <button onClick={()=>login(usuario,pass)} style={{width:"100%",padding:"13px",background:BRIGHT,border:"none",borderRadius:10,color:"#fff",fontFamily:FONT,fontSize:16,fontWeight:700,cursor:"pointer"}}>
+            <button onClick={()=>login(usuarioSel,pass)} style={{width:"100%",padding:"13px",background:BRIGHT,border:"none",borderRadius:10,color:"#fff",fontFamily:FONT,fontSize:16,fontWeight:700,cursor:"pointer"}}>
               Entrar
             </button>
           </div>
