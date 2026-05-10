@@ -42,7 +42,7 @@ const delBorrador = (id) => sb(`/propinas_borradores?id=eq.${id}`, {method:"DELE
 const patchReg = (id, dt) => sb(`/propinas_historial?id=eq.${id}`, {method:"PATCH", body:JSON.stringify({detalles:dt})});
 const deleteReg = (id) => sb(`/propinas_historial?id=eq.${id}`, {method:"DELETE", headers:{"Prefer":""}});
 
-const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"14px 16px", outline:"none", width:"100%", boxSizing:"border-box"};
+const INPUT = {background:CARD2, border:`1px solid ${BORDER}`, borderRadius:10, color:BRIGHT, fontFamily:"Inter,sans-serif", fontSize:15, padding:"12px 14px", outline:"none", width:"100%", boxSizing:"border-box"};
 const LABEL = {fontSize:11, color:MUTED, marginBottom:12, display:"block"};
 const SECTIT = {fontSize:10, color:ACCENT, letterSpacing:2, textTransform:"uppercase", fontWeight:600, marginBottom:14};
 
@@ -211,7 +211,7 @@ export default function App(){
             <div style={{fontSize:20, fontWeight:700, color:BRIGHT}}>🔐 Propinero</div>
             <div style={{fontSize:12, color:MUTED, marginTop:4}}>v2.3</div>
           </div>
-          <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20}}>
+          <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:16}}>
             <div style={{fontSize:14, fontWeight:600, color:BRIGHT, marginBottom:20}}>Iniciar sesión</div>
             <div style={{marginBottom:24}}>
               <label style={LABEL}>Usuario</label>
@@ -279,7 +279,7 @@ function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, f
   
   return (
     <div>
-      <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20, marginBottom:24}}>
+      <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:16, marginBottom:24}}>
         <div style={SECTIT}>Datos</div>
         <div style={{marginBottom:32}}>
           <label style={LABEL}>Fecha pago</label>
@@ -314,7 +314,7 @@ function TabRegistrar({personal, distrib, updDistrib, fechaPago, setFechaPago, f
           <input type="number" inputMode="decimal" value={monto} onChange={e=>setMonto(e.target.value)} placeholder="0.00" style={INPUT}/>
         </div>
       </div>
-      <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20, marginBottom:24}}>
+      <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:16, marginBottom:24}}>
         <div style={SECTIT}>Personal</div>
         {PUESTOS.map((p,i)=>
           <div key={p} style={{borderBottom:i<PUESTOS.length-1?`1px solid ${BORDER}`:"none", paddingBottom:16, marginBottom:24}}>
@@ -356,7 +356,7 @@ function TabBorradores({borradores, personal, delBorrador, convertirBorrador, co
         <div style={{textAlign:"center", padding:"64px 20px", color:MUTED}}>📝 Sin borradores</div>
       ) : (
         borradores.map(b=>
-          <div key={b.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20, marginBottom:14}}>
+          <div key={b.id} style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:16, marginBottom:14}}>
             <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14}}>
               <div>
                 <div style={{fontWeight:600, fontSize:15, color:BRIGHT}}>{fmtDate(b.fechaPropina)}</div>
@@ -483,7 +483,7 @@ function TabRegistros({personal, historial, selectedEmp, setSelectedEmp, fechaDe
         <button onClick={()=>setSelectedEmp(null)} style={{background:"none", border:`1px solid ${BORDER}`, borderRadius:10, color:MUTED, padding:"10px 14px", fontSize:13, cursor:"pointer", marginBottom:24}}>
           ← Volver
         </button>
-        <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:20, marginBottom:24}}>
+        <div style={{background:CARD, border:`1px solid ${BORDER}`, borderRadius:14, padding:16, marginBottom:24}}>
           <div style={{display:"flex", alignItems:"center", gap:14, marginBottom:24}}>
             <div style={{width:44, height:44, borderRadius:"50%", background:CARD2, border:`2px solid ${ACCENT}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:BRIGHT, fontWeight:700}}>
               {emp?.nombre[0].toUpperCase()}
